@@ -131,8 +131,8 @@ var app = angular.module('ASMSimulator', []);
                         if (isNaN(value)) {
                             throw "Not a " + typeNumber + ": " + value;
                         }
-                        else if (value < 0 || value > 255)
-                            throw typeNumber + " must have a value between 0-255";
+                        else if (value < 0 || value > 1023)
+                            throw typeNumber + " must have a value between 0-1023";
 
                         return {type: typeNumber, value: value};
                     }
@@ -712,14 +712,14 @@ var app = angular.module('ASMSimulator', []);
                     self.zero = false;
                     self.carry = false;
 
-                    if (value >= 256) {
+                    if (value >= 1024) {
                         self.carry = true;
-                        value = value % 256;
+                        value = value % 1024;
                     } else if (value === 0) {
                         self.zero = true;
                     } else if (value < 0) {
                         self.carry = true;
-                        value = 256 - (-value) % 256;
+                        value = 1024 - (-value) % 1024;
                     }
 
                     return value;
@@ -1215,7 +1215,7 @@ var app = angular.module('ASMSimulator', []);
         },
         reset: function() {
             var self = this;
-            self.maxSP = 231;
+            self.maxSP = 924;
             self.minSP = 0;
 
             self.gpr = [0, 0, 0, 0];
@@ -1232,7 +1232,7 @@ var app = angular.module('ASMSimulator', []);
 }]);
 ;app.service('memory', [function () {
     var memory = {
-        data: Array(256),
+        data: Array(1024),
         lastAccess: -1,
         load: function (address) {
             var self = this;
@@ -1363,9 +1363,9 @@ var app = angular.module('ASMSimulator', []);
                      {speed: 8, desc: "8 HZ"},
                      {speed: 16, desc: "16 HZ"}];
     $scope.speed = 4;
-    $scope.outputStartIndex = 232;
+    $scope.outputStartIndex = 925;
 
-    $scope.code = "; Simple example\n; Writes Hello World to the output\n\n	JMP start\nhello: DB \"Hello World!\" ; Variable\n       DB 0	; String terminator\n\nstart:\n	MOV C, hello    ; Point to var \n	MOV D, 232	; Point to output\n	CALL print\n        HLT             ; Stop execution\n\nprint:			; print(C:*from, D:*to)\n	PUSH A\n	PUSH B\n	MOV B, 0\n.loop:\n	MOV A, [C]	; Get char from var\n	MOV [D], A	; Write to output\n	INC C\n	INC D  \n	CMP B, [C]	; Check if end\n	JNZ .loop	; jump if not\n\n	POP B\n	POP A\n	RET";
+    $scope.code = "; Simple example\n; Writes Hello World to the output\n\n	JMP start\nhello: DB \"Hello World!\" ; Variable\n       DB 0	; String terminator\n\nstart:\n	MOV C, hello    ; Point to var \n	MOV D, 925	; Point to output\n	CALL print\n        HLT             ; Stop execution\n\nprint:			; print(C:*from, D:*to)\n	PUSH A\n	PUSH B\n	MOV B, 0\n.loop:\n	MOV A, [C]	; Get char from var\n	MOV [D], A	; Write to output\n	INC C\n	INC D  \n	CMP B, [C]	; Check if end\n	JNZ .loop	; jump if not\n\n	POP B\n	POP A\n	RET";
 
     $scope.reset = function () {
         cpu.reset();

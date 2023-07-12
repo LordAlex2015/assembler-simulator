@@ -75,14 +75,14 @@ app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
                     self.zero = false;
                     self.carry = false;
 
-                    if (value >= 256) {
+                    if (value >= 1024) {
                         self.carry = true;
-                        value = value % 256;
+                        value = value % 1024;
                     } else if (value === 0) {
                         self.zero = true;
                     } else if (value < 0) {
                         self.carry = true;
-                        value = 256 - (-value) % 256;
+                        value = 1024 - (-value) % 1024;
                     }
 
                     return value;
@@ -578,7 +578,7 @@ app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
         },
         reset: function() {
             var self = this;
-            self.maxSP = 231;
+            self.maxSP = 924;
             self.minSP = 0;
 
             self.gpr = [0, 0, 0, 0];

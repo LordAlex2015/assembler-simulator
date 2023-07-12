@@ -6,7 +6,7 @@ A simulator which provides a simplified assembler syntax (based on NASM) and is 
 ### Features
 - 8-bit CPU
 - 4 general purpose registers
-- 256 bytes of memory
+- 1024 bytes of memory
 - Console output
 
 ### How to build
