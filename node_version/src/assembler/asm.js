@@ -205,7 +205,6 @@ var asm = {
                         if (instr !== 'DB') {
                             mapping[code.length] = i;
                         }
-                        console.log(`inst : ${instr}`)
                         switch (instr) {
                             case 'DB':
                                 p1 = getValue(match[op1_group]);
@@ -335,11 +334,7 @@ var asm = {
                                     opCode = opcodes.JMP_ADDRESS;
                                 else
                                     throw "JMP does not support this operands";
-                                console.log(`code[0] : ${code[0]}`)
-                                console.log(`code[1] : ${code[1]}`)
                                 var len = code.push(opCode, p1.value);
-                                console.log(`opCode : ${opCode}`)
-                                console.log(`p1.value : ${p1.value}`)
                                 break;
                             case 'JC':
                             case 'JB':
@@ -637,7 +632,6 @@ var asm = {
                 }
             }
         }
-        code.forEach(element => console.log(`element : ${element}`));
         return { code: code, mapping: mapping, labels: labels };
     }
 };

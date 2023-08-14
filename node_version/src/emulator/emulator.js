@@ -5,7 +5,6 @@ var { memory } = require('./memory');
 var { opcodes } = require('./opcodes');
 
 var fs = require('fs');
-var code = fs.readFileSync('hello_world.txt', 'utf8')
 
 class Emulator{
     constructor(){
@@ -31,7 +30,6 @@ class Emulator{
     
             for (var i = 0, l = this.binary.length; i < l; i++) {
                 this.memory.data[i] = this.binary[i];
-                console.log(`memory.data[i] : ${memory.data[i]}`)
             }
         } catch (e) {
             if (e.line !== undefined) {
@@ -51,20 +49,16 @@ class Emulator{
             if (this.cpu.ip in this.mapping) {
                 this.selectedLine = this.mapping[this.cpu.ip];
             }
-            console.log(res)
             return res;
         } catch (e) {
-            console.log(e)
+            this.error = e;
             return false;
         }
     }
     
     run() {
         while (this.executeStep() === true) {
-            console.log("running")
-        }
-            
-        console.log("not running")
+        }  
     }
 
     dump(file = null) {

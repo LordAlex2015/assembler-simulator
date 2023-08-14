@@ -125,10 +125,8 @@ var cpu = {
 
             var regTo, regFrom, memFrom, memTo, number;
             var instr = memory.load(self.ip);
-            console.log(`instr : ${instr}`)
             switch (instr) {
                 case opcodes.NONE:
-                    console.log("opcode is null")
                     return false; // Abort step
                 case opcodes.MOV_REG_TO_REG:
                     regTo = checkGPR_SP(memory.load(++self.ip));
