@@ -130,7 +130,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                         if (isNaN(value)) {
                             throw "Not a " + typeNumber + ": " + value;
                         }
-                        else if (value < 0 || value > 255)
+                        else if (value < 0 || value > 16384)
                             throw typeNumber + " must have a value between 0-255";
 
                         return {type: typeNumber, value: value};
@@ -244,8 +244,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.MOV_NUMBER_TO_REGADDRESS;
                                     else
                                         throw "MOV does not support this operands";
-
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'ADD':
                                     p1 = getValue(match[op1_group]);
@@ -262,7 +261,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "ADD does not support this operands";
 
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'SUB':
                                     p1 = getValue(match[op1_group]);
@@ -279,7 +278,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "SUB does not support this operands";
 
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'INC':
                                     p1 = getValue(match[op1_group]);
@@ -290,7 +289,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "INC does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
 
                                     break;
                                 case 'DEC':
@@ -302,7 +301,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "DEC does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
 
                                     break;
                                 case 'CMP':
@@ -320,12 +319,12 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "CMP does not support this operands";
 
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'JMP':
                                     p1 = getValue(match[op1_group]);
                                     checkNoExtraArg('JMP', match[op2_group]);
-
+                                    console.log(p1.value);
                                     if (p1.type === "register")
                                         opCode = opcodes.JMP_REGADDRESS;
                                     else if (p1.type === "number")
@@ -391,7 +390,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value));
                                     break;
                                 case 'JA':
                                 case 'JNBE':
@@ -405,7 +404,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'JNA':
                                 case 'JBE':
@@ -419,7 +418,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'PUSH':
                                     p1 = getValue(match[op1_group]);
@@ -436,7 +435,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "PUSH does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'POP':
                                     p1 = getValue(match[op1_group]);
@@ -447,7 +446,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "PUSH does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'CALL':
                                     p1 = getValue(match[op1_group]);
@@ -485,7 +484,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "MULL does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'DIV':
                                     p1 = getValue(match[op1_group]);
@@ -501,8 +500,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.DIV_NUMBER;
                                     else
                                         throw "DIV does not support this operand";
-
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'AND':
                                     p1 = getValue(match[op1_group]);
@@ -519,7 +517,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "AND does not support this operands";
 
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'OR':
                                     p1 = getValue(match[op1_group]);
@@ -536,7 +534,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "OR does not support this operands";
 
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'XOR':
                                     p1 = getValue(match[op1_group]);
@@ -553,7 +551,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "XOR does not support this operands";
 
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'NOT':
                                     p1 = getValue(match[op1_group]);
@@ -564,7 +562,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "NOT does not support this operand";
 
-                                    code.push(opCode, p1.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'SHL':
                                 case 'SAL':
@@ -582,7 +580,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operands";
 
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 case 'SHR':
                                 case 'SAR':
@@ -599,8 +597,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.SHR_NUMBER_WITH_REG;
                                     else
                                         throw instr + " does not support this operands";
-
-                                    code.push(opCode, p1.value, p2.value);
+                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF),(p2.value >> 8 & 0xFF), (p2.value & 0xFF));
                                     break;
                                 default:
                                     throw "Invalid instruction: " + match[2];
