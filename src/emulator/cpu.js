@@ -309,7 +309,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.JMP_ADDRESS:
                         console.log("inside JMP_ADDRESS");
-                        number = memory.load(++self.ip);
+                        number = memory.load16(++self.ip);
                         console.log(number);
                         self.ip++;
                         jump(number);
@@ -361,7 +361,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.JZ_ADDRESS:
                         console.log("JZ_ADDRESS");
-                        number = memory.load(++self.ip);
+                        number = memory.load16(++self.ip);
                         self.ip++;
                         if (self.zero) {
                             jump(number);
@@ -381,6 +381,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.JNZ_ADDRESS:
                         number = memory.load16(++self.ip);
+                        console.log("NUMBER : " + number);
                         self.ip++;
                         if (!self.zero) {
                             jump(number);
@@ -456,15 +457,14 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         self.ip++;
                         break;
                     case opcodes.CALL_REGADDRESS:
-                        regTo = checkGPR(memory.load(++self.ip));
+                        regTo = checkGPR(memory.load16(++self.ip));
                         self.ip++;
                         push(self.ip);
                         jump(self.gpr[regTo]);
                         break;
                     case opcodes.CALL_ADDRESS:
                         console.log("inside call_address");
-                        number = memory.load(++self.ip);
-                        self.ip++;
+                        number = memory.load16(++self.ip);
                         push(self.ip);
                         jump(number);
                         break;
