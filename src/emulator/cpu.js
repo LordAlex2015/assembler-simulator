@@ -422,7 +422,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.PUSH_REG:
                         regFrom = checkGPR(memory.load16(++self.ip));
-                        console.log("inside push_reg : " + regFrom);
                         self.ip++;
                         push(self.gpr[regFrom]);
                         self.ip++;
