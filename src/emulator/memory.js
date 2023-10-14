@@ -21,7 +21,7 @@ app.service('memory', [function () {
             }
 
             self.lastAccess = address;
-            return (self.data[address] << 8) || (self.data[address + 1]);
+            return (self.data[address] << 8) + (self.data[address + 1]);
         },
         store: function (address, value) {
             var self = this;

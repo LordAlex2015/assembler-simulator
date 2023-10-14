@@ -65,7 +65,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     if (offset > 15) {
                         offset = offset - 32;
                     }
-
                     return base + offset;
                 };
 
@@ -87,7 +86,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                 };
 
                 var jump = function (newIP) {
-                    console.log(newIP);
                     if (newIP < 0 || newIP >= memory.data.length) {
                         throw "IP outside memory";
                     } else {
@@ -96,18 +94,22 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                 };
 
                 var push = function (value) {
-                    memory.store16(self.sp--, value);
+                    self.sp -= 2;
+                    memory.store16(self.sp, value);
                     if (self.sp < self.minSP) {
                         throw "Stack overflow";
                     }
+                    console.log("value_push : " + value + "\n");
+
                 };
 
                 var pop = function () {
-                    var value = memory.load16(++self.sp);
+                    var value = memory.load16(self.sp);
+                    self.sp += 2;
                     if (self.sp > self.maxSP) {
                         throw "Stack underflow";
                     }
-
+                    console.log("value_pop : " + value);
                     return value;
                 };
 
@@ -125,7 +127,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
 
                 var regTo, regFrom, memFrom, memTo, number;
                 var instr = memory.load(self.ip);
-                console.log("instr : " + instr);
                 switch (instr) {
                     case opcodes.NONE:
                         return false; // Abort step
@@ -278,7 +279,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         self.ip++;
                         break;
                     case opcodes.CMP_REGADDRESS_WITH_REG:
-                        console.log("inside CMP_REGADDRESS_WITH_REG");
                         regTo = checkGPR_SP(memory.load16(++self.ip));
                         self.ip++;
                         regFrom = memory.load16(++self.ip);
@@ -308,9 +308,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         jump(self.gpr[regTo]);
                         break;
                     case opcodes.JMP_ADDRESS:
-                        console.log("inside JMP_ADDRESS");
                         number = memory.load16(++self.ip);
-                        console.log(number);
                         self.ip++;
                         jump(number);
                         break;
@@ -360,7 +358,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         }
                         break;
                     case opcodes.JZ_ADDRESS:
-                        console.log("JZ_ADDRESS");
                         number = memory.load16(++self.ip);
                         self.ip++;
                         if (self.zero) {
@@ -370,7 +367,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         }
                         break;
                     case opcodes.JNZ_REGADDRESS:
-                        console.log("JNZ_REGADDRESS");
                         regTo = checkGPR(memory.load16(++self.ip));
                         self.ip++;
                         if (!self.zero) {
@@ -381,7 +377,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.JNZ_ADDRESS:
                         number = memory.load16(++self.ip);
-                        console.log("NUMBER : " + number);
                         self.ip++;
                         if (!self.zero) {
                             jump(number);
@@ -408,7 +403,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         }
                         break;
                     case opcodes.JNA_REGADDRESS: // JNA REG
-                        console.log("inside opcodes");
                         regTo = checkGPR(memory.load16(++self.ip));
                         self.ip++;
                         if (self.zero || self.carry) {
@@ -428,6 +422,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.PUSH_REG:
                         regFrom = checkGPR(memory.load16(++self.ip));
+                        console.log("inside push_reg : " + regFrom);
                         self.ip++;
                         push(self.gpr[regFrom]);
                         self.ip++;
@@ -458,18 +453,19 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.CALL_REGADDRESS:
                         regTo = checkGPR(memory.load16(++self.ip));
-                        self.ip++;
-                        push(self.ip);
+                        push(self.ip+2);
                         jump(self.gpr[regTo]);
                         break;
                     case opcodes.CALL_ADDRESS:
-                        console.log("inside call_address");
+                        console.log("Calling function");
                         number = memory.load16(++self.ip);
-                        push(self.ip);
+                        push(self.ip+2);
                         jump(number);
                         break;
                     case opcodes.RET:
-                        jump(pop());
+                        jump_addr = pop();
+                        console.log("jump_addr " + jump_addr);
+                        jump(jump_addr);
                         break;
                     case opcodes.MUL_REG: // A = A * REG
                         regFrom = checkGPR(memory.load16(++self.ip));

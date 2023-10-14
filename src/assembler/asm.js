@@ -206,15 +206,18 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                 case 'DB':
                                     p1 = getValue(match[op1_group]);
 
-                                    if (p1.type === "number")
+                                    if (p1.type === "number"){
                                         code.push(p1.value);
-                                    else if (p1.type === "numbers")
+                                    }
+                                    else if (p1.type === "numbers"){
                                         for (var j = 0, k = p1.value.length; j < k; j++) {
-                                            code.push(p1.value[j]);
+                                            code.push(0, p1.value[j]);
                                         }
-                                    else
+                                        code.push(0,0);
+                                    }
+                                    else{
                                         throw "DB does not support this operand";
-
+                                    }
                                     break;
                                 case 'HLT':
                                     checkNoExtraArg('HLT', match[op1_group]);
@@ -244,7 +247,12 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.MOV_NUMBER_TO_REGADDRESS;
                                     else
                                         throw "MOV does not support this operands";
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    if (!angular.isNumber(p2.value)) {
+                                        code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value), 0);
+                                    }
+                                    else {
+                                        code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    }
                                     break;
                                 case 'ADD':
                                     p1 = getValue(match[op1_group]);
@@ -400,9 +408,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                 case 'JNZ':
                                 case 'JNE':
                                     p1 = getValue(match[op1_group]);
-                                    console.log("INSIDE JNE/JNZ : " + p1.value);
                                     checkNoExtraArg(instr, match[op2_group]);
-                                    console.log("JNE VALUE : " + p1.value);
                                     if (p1.type === "register")
                                         opCode = opcodes.JNZ_REGADDRESS;
                                     else if (p1.type === "number")
@@ -414,7 +420,6 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         code.push(opCode, (p1.value), 0);
                                     }
                                     else {
-                                        console.log("not inside NAN");
                                         code.push(opCode, (p1.value));
                                     }
                                     break;
@@ -460,7 +465,6 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                 case 'PUSH':
                                     p1 = getValue(match[op1_group]);
                                     checkNoExtraArg(instr, match[op2_group]);
-                                    console.log("p1.type : " + p1.type);
                                     if (p1.type === "register")
                                         opCode = opcodes.PUSH_REG;
                                     else if (p1.type === "regaddress")
@@ -475,7 +479,6 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'POP':
-                                    console.log("inside pop");
                                     p1 = getValue(match[op1_group]);
                                     checkNoExtraArg(instr, match[op2_group]);
 
@@ -488,13 +491,11 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     break;
                                 case 'CALL':
                                     p1 = getValue(match[op1_group]);
-                                    //console.log("CALL : " + p1.value);
                                     checkNoExtraArg(instr, match[op2_group]);
 
                                     if (p1.type === "register")
                                         opCode = opcodes.CALL_REGADDRESS;
                                     else if (p1.type === "number") {
-                                        //console.log("inside number");
                                         opCode = opcodes.CALL_ADDRESS;
                                     }
                                     else
@@ -676,19 +677,15 @@ app.service('assembler', ['opcodes', function (opcodes) {
                     throw { error: e, line: i };
                 }
             }
-
+            for (i = 0; i < labels.size; i++) {
+            }
             // Replace label
             for (i = 0, l = code.length; i < l; i++) {
                 if (!angular.isNumber(code[i])) {
                     if (code[i] in labels) {
                         a = i;
-                        b = i+1;
-                        console.log("a : " + a);
-                        console.log("b : " + b);
-                        console.log("code[" + i + "] = " +code[i]);
-                        console.log("code[" + (i+1) + "] = " +code[i+1]);
+                        b = i + 1;
                         lab = labels[code[i]];
-                        console.log("lab : " + lab);
                         code[i] = ((lab >> 8) & 0xFF);
                         code[++i] = (lab & 0xFF);
                     } else {
