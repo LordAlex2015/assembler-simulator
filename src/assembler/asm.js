@@ -184,6 +184,16 @@ app.service('assembler', ['opcodes', function (opcodes) {
                 }
             };
 
+            var pushVal = function(value){
+                if(!angular.isNumber(value)){
+                    code.push(value, 0);
+                }
+                else{
+                    code.push((value >> 8 & 0xFF), (value & 0xFF));
+                }
+
+            };
+
             for (var i = 0, l = lines.length; i < l; i++) {
                 try {
                     var match = regex.exec(lines[i]);
@@ -207,7 +217,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     p1 = getValue(match[op1_group]);
 
                                     if (p1.type === "number"){
-                                        code.push(p1.value);
+                                        code.push((p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     }
                                     else if (p1.type === "numbers"){
                                         for (var j = 0, k = p1.value.length; j < k; j++) {
@@ -247,12 +257,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.MOV_NUMBER_TO_REGADDRESS;
                                     else
                                         throw "MOV does not support this operands";
-                                    if (!angular.isNumber(p2.value)) {
-                                        code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'ADD':
                                     p1 = getValue(match[op1_group]);
@@ -268,8 +275,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.ADD_NUMBER_TO_REG;
                                     else
                                         throw "ADD does not support this operands";
-
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'SUB':
                                     p1 = getValue(match[op1_group]);
@@ -286,7 +294,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "SUB does not support this operands";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'INC':
                                     p1 = getValue(match[op1_group]);
@@ -327,7 +337,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "CMP does not support this operands";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'JMP':
                                     p1 = getValue(match[op1_group]);
@@ -338,13 +350,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.JMP_ADDRESS;
                                     else
                                         throw "JMP does not support this operands";
-
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'JC':
                                 case 'JB':
@@ -359,12 +366,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'JNC':
                                 case 'JNB':
@@ -379,12 +382,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + "does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'JZ':
                                 case 'JE':
@@ -398,12 +397,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'JNZ':
                                 case 'JNE':
@@ -416,12 +411,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
 
                                 case 'JA':
@@ -436,12 +427,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'JNA':
                                 case 'JBE':
@@ -455,12 +442,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'PUSH':
                                     p1 = getValue(match[op1_group]);
@@ -476,7 +459,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "PUSH does not support this operand";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'POP':
                                     p1 = getValue(match[op1_group]);
@@ -500,13 +484,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     }
                                     else
                                         throw "CALL does not support this operand";
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
 
                                     break;
                                 case 'RET':
@@ -532,12 +511,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "MULL does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'DIV':
                                     p1 = getValue(match[op1_group]);
@@ -553,12 +528,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.DIV_NUMBER;
                                     else
                                         throw "DIV does not support this operand";
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'AND':
                                     p1 = getValue(match[op1_group]);
@@ -575,7 +546,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "AND does not support this operands";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'OR':
                                     p1 = getValue(match[op1_group]);
@@ -592,7 +565,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "OR does not support this operands";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'XOR':
                                     p1 = getValue(match[op1_group]);
@@ -609,7 +584,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "XOR does not support this operands";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'NOT':
                                     p1 = getValue(match[op1_group]);
@@ -620,12 +597,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw "NOT does not support this operand";
 
-                                    if (!angular.isNumber(p1.value)) {
-                                        code.push(opCode, (p1.value), 0);
-                                    }
-                                    else {
-                                        code.push(opCode, (p1.value));
-                                    }
+                                    code.push(opCode);
+                                    pushVal(p1.value);
                                     break;
                                 case 'SHL':
                                 case 'SAL':
@@ -643,7 +616,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                     else
                                         throw instr + " does not support this operands";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 case 'SHR':
                                 case 'SAR':
@@ -660,7 +635,9 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         opCode = opcodes.SHR_NUMBER_WITH_REG;
                                     else
                                         throw instr + " does not support this operands";
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF), (p2.value >> 8 & 0xFF), (p2.value & 0xFF));
+                                    code.push(opCode);
+                                    pushVal(p1.value);
+                                    pushVal(p2.value);
                                     break;
                                 default:
                                     throw "Invalid instruction: " + match[2];

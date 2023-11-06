@@ -72,14 +72,14 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     self.zero = false;
                     self.carry = false;
 
-                    if (value >= 16384) {
+                    if (value >= 65536) {
                         self.carry = true;
-                        value = value % 16384;
+                        value = value % 65536;
                     } else if (value === 0) {
                         self.zero = true;
                     } else if (value < 0) {
                         self.carry = true;
-                        value = 16384 - (-value) % 16384;
+                        value = 65536 - (-value) % 65536;
                     }
 
                     return value;
