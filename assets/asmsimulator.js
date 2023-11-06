@@ -208,7 +208,7 @@ var app = angular.module('ASMSimulator', []);
                                     p1 = getValue(match[op1_group]);
 
                                     if (p1.type === "number"){
-                                        code.push(p1.value);
+                                        code.push((p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     }
                                     else if (p1.type === "numbers"){
                                         for (var j = 0, k = p1.value.length; j < k; j++) {
