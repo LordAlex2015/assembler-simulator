@@ -131,8 +131,8 @@ var app = angular.module('ASMSimulator', []);
                         if (isNaN(value)) {
                             throw "Not a " + typeNumber + ": " + value;
                         }
-                        else if (value < 0 || value > 16384)
-                            throw typeNumber + " must have a value between 0-255";
+                        else if (value < 0 || value > 65535)
+                            throw typeNumber + " must have a value between 0-65535";
 
                         return { type: typeNumber, value: value };
                     }
