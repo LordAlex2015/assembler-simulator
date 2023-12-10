@@ -126,7 +126,8 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                 }
 
                 var regTo, regFrom, memFrom, memTo, number;
-                var instr = memory.load(self.ip);
+                var instr = memory.load16(self.ip);
+                self.ip++;
                 switch (instr) {
                     case opcodes.NONE:
                         return false; // Abort step

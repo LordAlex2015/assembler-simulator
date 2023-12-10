@@ -233,7 +233,7 @@ var app = angular.module('ASMSimulator', []);
                                 case 'HLT':
                                     checkNoExtraArg('HLT', match[op1_group]);
                                     opCode = opcodes.NONE;
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     break;
 
                                 case 'MOV':
@@ -258,7 +258,7 @@ var app = angular.module('ASMSimulator', []);
                                         opCode = opcodes.MOV_NUMBER_TO_REGADDRESS;
                                     else
                                         throw "MOV does not support this operands";
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -276,7 +276,7 @@ var app = angular.module('ASMSimulator', []);
                                         opCode = opcodes.ADD_NUMBER_TO_REG;
                                     else
                                         throw "ADD does not support this operands";
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -295,7 +295,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "SUB does not support this operands";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -308,7 +308,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "INC does not support this operand";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
+                                    code.push((opCode >> 8 & 0xFF), (opCode & 0xFF), (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
 
                                     break;
                                 case 'DEC':
@@ -320,7 +320,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "DEC does not support this operand";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
+                                    code.push((opCode >> 8 & 0xFF), (opCode & 0xFF),(p1.value >> 8 & 0xFF), (p1.value & 0xFF));
 
                                     break;
                                 case 'CMP':
@@ -338,7 +338,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "CMP does not support this operands";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -351,7 +351,7 @@ var app = angular.module('ASMSimulator', []);
                                         opCode = opcodes.JMP_ADDRESS;
                                     else
                                         throw "JMP does not support this operands";
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'JC':
@@ -367,7 +367,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'JNC':
@@ -383,7 +383,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw instr + "does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'JZ':
@@ -398,7 +398,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'JNZ':
@@ -412,7 +412,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
 
@@ -428,7 +428,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'JNA':
@@ -443,7 +443,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw instr + " does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'PUSH':
@@ -460,7 +460,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "PUSH does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'POP':
@@ -472,7 +472,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "PUSH does not support this operand";
 
-                                    code.push(opCode, (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
+                                    code.push((opCode >> 8 & 0xFF), (opCode & 0xFF), (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     break;
                                 case 'CALL':
                                     p1 = getValue(match[op1_group]);
@@ -485,7 +485,7 @@ var app = angular.module('ASMSimulator', []);
                                     }
                                     else
                                         throw "CALL does not support this operand";
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
 
                                     break;
@@ -494,7 +494,7 @@ var app = angular.module('ASMSimulator', []);
 
                                     opCode = opcodes.RET;
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     break;
 
                                 case 'MUL':
@@ -512,7 +512,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "MULL does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'DIV':
@@ -529,7 +529,7 @@ var app = angular.module('ASMSimulator', []);
                                         opCode = opcodes.DIV_NUMBER;
                                     else
                                         throw "DIV does not support this operand";
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'AND':
@@ -547,7 +547,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "AND does not support this operands";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -566,7 +566,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "OR does not support this operands";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -585,7 +585,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "XOR does not support this operands";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -598,7 +598,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "NOT does not support this operand";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     break;
                                 case 'SHL':
@@ -617,7 +617,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw instr + " does not support this operands";
 
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -636,7 +636,7 @@ var app = angular.module('ASMSimulator', []);
                                         opCode = opcodes.SHR_NUMBER_WITH_REG;
                                     else
                                         throw instr + " does not support this operands";
-                                    code.push(opCode);
+                                    pushVal(opCode);
                                     pushVal(p1.value);
                                     pushVal(p2.value);
                                     break;
@@ -804,7 +804,8 @@ var app = angular.module('ASMSimulator', []);
                 }
 
                 var regTo, regFrom, memFrom, memTo, number;
-                var instr = memory.load(self.ip);
+                var instr = memory.load16(self.ip);
+                self.ip++;
                 switch (instr) {
                     case opcodes.NONE:
                         return false; // Abort step
