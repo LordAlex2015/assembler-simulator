@@ -1,7 +1,7 @@
 var app = angular.module('ASMSimulator', []);
-;app.service('assembler', ['opcodes', function (opcodes) {
+;app.service('assembler', ['opcodes', function(opcodes) {
     return {
-        go: function (input) {
+        go: function(input) {
             // Use https://www.debuggex.com/
             // Matches: "label: INSTRUCTION (["')OPERAND1(]"'), (["')OPERAND2(]"')
             // GROUPS:      1       2               3                    7
@@ -28,7 +28,7 @@ var app = angular.module('ASMSimulator', []);
             var lines = input.split('\n');
 
             // Allowed formats: 200, 200d, 0xA4, 0o48, 101b
-            var parseNumber = function (input) {
+            var parseNumber = function(input) {
                 if (input.slice(0, 2) === "0x") {
                     return parseInt(input.slice(2), 16);
                 } else if (input.slice(0, 2) === "0o") {
@@ -45,7 +45,7 @@ var app = angular.module('ASMSimulator', []);
             };
 
             // Allowed registers: A, B, C, D, SP
-            var parseRegister = function (input) {
+            var parseRegister = function(input) {
                 input = input.toUpperCase();
 
                 if (input === 'A') {
@@ -63,7 +63,7 @@ var app = angular.module('ASMSimulator', []);
                 }
             };
 
-            var parseOffsetAddressing = function (input) {
+            var parseOffsetAddressing = function(input) {
                 input = input.toUpperCase();
                 var m = 0;
                 var base = 0;
@@ -107,7 +107,7 @@ var app = angular.module('ASMSimulator', []);
             };
 
             // Allowed: Register, Label or Number; SP+/-Number is allowed for 'regaddress' type
-            var parseRegOrNumber = function (input, typeReg, typeNumber) {
+            var parseRegOrNumber = function(input, typeReg, typeNumber) {
                 var register = parseRegister(input);
 
                 if (register !== undefined) {
@@ -139,11 +139,11 @@ var app = angular.module('ASMSimulator', []);
                 }
             };
 
-            var parseLabel = function (input) {
+            var parseLabel = function(input) {
                 return regexLabel.exec(input) ? input : undefined;
             };
 
-            var getValue = function (input) {
+            var getValue = function(input) {
                 switch (input.slice(0, 1)) {
                     case '[': // [number] or [register]
                         var address = input.slice(1, input.length - 1);
@@ -168,7 +168,7 @@ var app = angular.module('ASMSimulator', []);
                 }
             };
 
-            var addLabel = function (label) {
+            var addLabel = function(label) {
                 var upperLabel = label.toUpperCase();
                 if (upperLabel in normalizedLabels)
                     throw "Duplicate label: " + label;
@@ -179,17 +179,17 @@ var app = angular.module('ASMSimulator', []);
                 labels[label] = code.length;
             };
 
-            var checkNoExtraArg = function (instr, arg) {
+            var checkNoExtraArg = function(instr, arg) {
                 if (arg !== undefined) {
                     throw instr + ": too many arguments";
                 }
             };
 
-            var pushVal = function(value){
-                if(!angular.isNumber(value)){
+            var pushVal = function(value) {
+                if (!angular.isNumber(value)) {
                     code.push(value, 0);
                 }
-                else{
+                else {
                     code.push((value >> 8 & 0xFF), (value & 0xFF));
                 }
 
@@ -217,17 +217,21 @@ var app = angular.module('ASMSimulator', []);
                                 case 'DB':
                                     p1 = getValue(match[op1_group]);
 
-                                    if (p1.type === "number"){
+                                    if (p1.type === "number") {
                                         code.push((p1.value >> 8 & 0xFF), (p1.value & 0xFF));
                                     }
-                                    else if (p1.type === "numbers"){
+                                    else if (p1.type === "numbers") {
                                         for (var j = 0, k = p1.value.length; j < k; j++) {
                                             code.push(0, p1.value[j]);
                                         }
-                                        code.push(0,0);
+                                        code.push(0, 0);
                                     }
-                                    else{
-                                        throw "DB does not support this operand";
+                                    else if (p1.type === "address") {
+                                        code.push(p1.value, 0);
+                                    }
+                                    else {
+                                        console.log(p1.type);
+                                        throw "DB does not support this operand : " + p1.type;
                                     }
                                     break;
                                 case 'HLT':
@@ -320,7 +324,7 @@ var app = angular.module('ASMSimulator', []);
                                     else
                                         throw "DEC does not support this operand";
 
-                                    code.push((opCode >> 8 & 0xFF), (opCode & 0xFF),(p1.value >> 8 & 0xFF), (p1.value & 0xFF));
+                                    code.push((opCode >> 8 & 0xFF), (opCode & 0xFF), (p1.value >> 8 & 0xFF), (p1.value & 0xFF));
 
                                     break;
                                 case 'CMP':
