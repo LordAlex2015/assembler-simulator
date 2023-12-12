@@ -72,6 +72,29 @@
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
+                        <h4 class="panel-title">Labels</h4>
+                    </div>
+                    <div class="panel-body source-code">
+                        <table class="table table-condensed table-striped codelabels">
+                            <tr>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr ng-repeat="(name, value) in labels" class="codelabel">
+                                <td class="codelabel-name">{{ name }}</td>
+                                <td class="codelabel-line"><a ng-click="jumpToLine(value)">{{ value | number:displayHex }}</a></td>
+                                <td class="codelabel-value">{{ memory.data[value] | number:displayHex }} | {{ memory.data[value+1] | number:displayHex }}
+                                    <span ng-if="memory.data[value] >= 32 && memory.data[value] <= 126">
+                                        ('{{ getChar(memory.data[value]) }} | {{ getChar(memory.data[value+1])}}')
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
                         <h4 class="panel-title">CPU & Memory</h4>
                     </div>
                     <div class="panel-body">
@@ -143,29 +166,6 @@
                                 <a ng-click="displayD = false" ng-show="displayD">Hide</a>
                             </small>
                         </p>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">Labels</h4>
-                    </div>
-                    <div class="panel-body source-code">
-                        <table class="table table-condensed table-striped codelabels">
-                            <tr>
-                                <th>Name</th>
-                                <th>Address</th>
-                                <th>Value</th>
-                            </tr>
-                            <tr ng-repeat="(name, value) in labels" class="codelabel">
-                                <td class="codelabel-name">{{ name }}</td>
-                                <td class="codelabel-line"><a ng-click="jumpToLine(value)">{{ value | number:displayHex }}</a></td>
-                                <td class="codelabel-value">{{ memory.data[value] | number:displayHex }}
-                                    <span ng-if="memory.data[value] >= 32 && memory.data[value] <= 126">
-                                        ('{{ getChar(memory.data[value]) }}')
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>
                     </div>
                 </div>
             </div>
