@@ -108,7 +108,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
             // Allowed: Register, Label or Number; SP+/-Number is allowed for 'regaddress' type
             var parseRegOrNumber = function(input, typeReg, typeNumber) {
                 var register = parseRegister(input);
-                
+
                 if (register !== undefined) {
                     return { type: typeReg, value: register };
                 } else {
@@ -150,7 +150,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
                     case '{': // [number] or [register]
                         if (instruction == "DB") {
                             var label = input.slice(1, input.length - 1);
-                            return parseRegOrNumber(label, "regaddress", "address");
+                            return parseRegOrNumber(label, "regaddress", "labelAddress");
                         }
                         else {
                             throw "Bracket notation is only available for DB instruction";
@@ -234,7 +234,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
                                         }
                                         code.push(0, 0);
                                     }
-                                    else if (p1.type === "address") {
+                                    else if (p1.type === "labelAddress") {
                                         code.push(p1.value, 0);
                                     }
                                     else {
