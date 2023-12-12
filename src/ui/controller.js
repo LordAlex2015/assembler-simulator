@@ -25,6 +25,29 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         $scope.selectedLine = -1;
     };
 
+    $scope.downloadCode = function () {
+        var link = document.createElement('a');
+        var content = $scope.code;
+        var file = new Blob([content], {type: 'text/plain'});
+        link.href = URL.createObjectURL(file);
+        link.download = 'code.asm';
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        document.body.removeChild(link);
+    };
+
+    $scope.loadFile = function () {
+        var file = document.querySelector("input").files[0];
+        console.log(file);
+        var reader = new FileReader();
+        reader.addEventListener("load", function (event) {
+            $scope.code = event.target.result;
+            $scope.$apply();
+        });
+        reader.readAsText(file, "UTF-8");
+    };
+
     $scope.executeStep = function () {
         if (!$scope.checkPrgrmLoaded()) {
             $scope.assemble();
@@ -95,6 +118,7 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
             $scope.mapping = assembly.mapping;
             var binary = assembly.code;
             $scope.labels = assembly.labels;
+            console.log($scope.labels);
 
             if (binary.length > memory.data.length)
                 throw "Binary code does not fit into the memory. Max " + memory.data.length + " bytes are allowed";

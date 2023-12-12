@@ -19,6 +19,16 @@
                     <button type="button" class="btn btn-default navbar-btn" ng-click="executeStep()" ng-disabled="isRunning"><span class="glyphicon glyphicon-forward"></span> Step</button>
                 </div>
                 <button type="button" class="btn btn-default navbar-btn" ng-click="reset()">Reset</button>
+                <button type="button" class="btn btn-default navbar-btn" ng-click="downloadCode()">Download Code</button>
+                <form method="post" enctype="multipart/form-data">
+                    <div>
+                      <label for="file">Choose file to load</label>
+                      <input type="file" id="file" name="file"/>
+                    </div>
+                    <div>
+                      <button type="button" class="btn btn-default navbar-btn" ng-click="loadFile()">Load file</button>
+                    </div>
+                  </form>                  
             </div>
             <div class="navbar-header navbar-right">
                 <a class="navbar-brand" style="color:#FFFFFF">Simple 8-bit Assembler Simulator</a>
@@ -73,7 +83,7 @@
                                     <th style="text-align:center">B</th>
                                     <th style="text-align:center">C</th>
                                     <th style="text-align:center">D</th>
-                                    <th style="text-align:center">IP</th>
+                                    <th style="text-align:center">PC</th>
                                     <th style="text-align:center">SP</th>
                                     <th style="text-align:center">Z</th>
                                     <th style="text-align:center">C</th>
