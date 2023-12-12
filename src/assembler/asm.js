@@ -4,7 +4,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
             // Use https://www.debuggex.com/
             // Matches: "label: INSTRUCTION (["')OPERAND1(]"'), (["')OPERAND2(]"')
             // GROUPS:      1       2               3                    7
-            var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
+            var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+([\[|\{](\w+((\+|-)\d+)?)[\]|\}]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
 
             // Regex group indexes for operands
             var op1_group = 3;
@@ -108,7 +108,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
             // Allowed: Register, Label or Number; SP+/-Number is allowed for 'regaddress' type
             var parseRegOrNumber = function(input, typeReg, typeNumber) {
                 var register = parseRegister(input);
-
+                
                 if (register !== undefined) {
                     return { type: typeReg, value: register };
                 } else {
@@ -142,11 +142,20 @@ app.service('assembler', ['opcodes', function(opcodes) {
                 return regexLabel.exec(input) ? input : undefined;
             };
 
-            var getValue = function(input) {
+            var getValue = function(input, instruction) {
                 switch (input.slice(0, 1)) {
                     case '[': // [number] or [register]
                         var address = input.slice(1, input.length - 1);
                         return parseRegOrNumber(address, "regaddress", "address");
+                    case '{': // [number] or [register]
+                        if (instruction == "DB") {
+                            var label = input.slice(1, input.length - 1);
+                            return parseRegOrNumber(label, "regaddress", "address");
+                        }
+                        else {
+                            throw "Bracket notation is only available for DB instruction";
+                        }
+                        break;
                     case '"': // "String"
                         var text = input.slice(1, input.length - 1);
                         var chars = [];
@@ -214,7 +223,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
 
                             switch (instr) {
                                 case 'DB':
-                                    p1 = getValue(match[op1_group]);
+                                    p1 = getValue(match[op1_group],"DB");
 
                                     if (p1.type === "number") {
                                         code.push((p1.value >> 8 & 0xFF), (p1.value & 0xFF));
