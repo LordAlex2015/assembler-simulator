@@ -65,7 +65,8 @@ def main():
             "app.service": LinesToIgnoreMetadata(True)
         },
         lastLine={"val": "cpu.reset();", "shouldWrite": True},
-        linesToModify={}
+        linesToModify={
+            "step: function () {": "step: function (memory,opcodes) {\n"}
     )
 
     translate_opcodes = translator_generator(

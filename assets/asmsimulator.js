@@ -781,8 +781,6 @@ var app = angular.module('ASMSimulator', []);
                     if (self.sp < self.minSP) {
                         throw "Stack overflow";
                     }
-                    console.log("value_push : " + value + "\n");
-
                 };
 
                 var pop = function () {
@@ -791,7 +789,6 @@ var app = angular.module('ASMSimulator', []);
                     if (self.sp > self.maxSP) {
                         throw "Stack underflow";
                     }
-                    console.log("value_pop : " + value);
                     return value;
                 };
 
@@ -1146,7 +1143,6 @@ var app = angular.module('ASMSimulator', []);
                         break;
                     case opcodes.RET:
                         jump_addr = pop();
-                        console.log("jump_addr " + jump_addr);
                         jump(jump_addr);
                         break;
                     case opcodes.MUL_REG: // A = A * REG

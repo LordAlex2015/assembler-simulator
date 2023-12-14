@@ -6,5 +6,6 @@ const emulator = new Emulator();
 emulator.assemble(code);
 if(emulator.error) throw new Error(emulator.error);
 emulator.run();
+if(emulator.error) throw new Error(emulator.error);
 emulator.dump('test.dat')
 emulator.show();

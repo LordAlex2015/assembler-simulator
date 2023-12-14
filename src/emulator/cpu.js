@@ -99,8 +99,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     if (self.sp < self.minSP) {
                         throw "Stack overflow";
                     }
-                    console.log("value_push : " + value + "\n");
-
                 };
 
                 var pop = function () {
@@ -109,7 +107,6 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     if (self.sp > self.maxSP) {
                         throw "Stack underflow";
                     }
-                    console.log("value_pop : " + value);
                     return value;
                 };
 
@@ -457,14 +454,12 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         jump(self.gpr[regTo]);
                         break;
                     case opcodes.CALL_ADDRESS:
-                        console.log("Calling function");
                         number = memory.load16(++self.ip);
                         push(self.ip+2);
                         jump(number);
                         break;
                     case opcodes.RET:
                         jump_addr = pop();
-                        console.log("jump_addr " + jump_addr);
                         jump(jump_addr);
                         break;
                     case opcodes.MUL_REG: // A = A * REG
