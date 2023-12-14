@@ -185,7 +185,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
             };
 
             var pushVal = function(value) {
-                if (!angular.isNumber(value)) {
+                if (isNaN(value)) {
                     code.push(value, 0);
                 }
                 else {
@@ -662,7 +662,7 @@ app.service('assembler', ['opcodes', function(opcodes) {
             }
             // Replace label
             for (i = 0, l = code.length; i < l; i++) {
-                if (!angular.isNumber(code[i])) {
+                if (isNaN(code[i])) {
                     if (code[i] in labels) {
                         a = i;
                         b = i + 1;
