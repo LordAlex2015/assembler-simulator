@@ -6,8 +6,8 @@ var { opcodes } = require('./opcodes');
 
 var fs = require('fs');
 
-class Emulator{
-    constructor(){
+class Emulator {
+    constructor() {
         this.assembly = null;
         this.mapping = null;
         this.binary = null;
@@ -18,16 +18,16 @@ class Emulator{
         this.cpu = cpu;
     }
 
-    assemble(code){
+    assemble(code) {
         try {
             this.assembly = asm.go(code);
             this.mapping = this.assembly.mapping;
             this.binary = this.assembly.code;
             this.labels = this.assembly.labels;
-    
+
             if (this.binary.length > memory.data.length)
                 throw "Binary code does not fit into the memory. Max " + memory.data.length + " bytes are allowed";
-    
+
             for (var i = 0, l = this.binary.length; i < l; i++) {
                 this.memory.data[i] = this.binary[i];
             }
@@ -55,32 +55,25 @@ class Emulator{
             return false;
         }
     }
-    
+
     run() {
         while (this.executeStep() === true) {
-        }  
+        }
     }
 
-    dump(file = null) {
-        if (file == null) {
-            console.log("Memory dump:")
-            for (var i = 0, l = this.memory.data.length; i < l; i++) {
-                if(i != 0 && i % 16 == 0) console.log("\n")
-                console.log(this.memory.data[i].toString(16).padStart(2, '0') + " ")
-            }
-            return
-        }
+    dump(file) {
 
         var f = fs.createWriteStream(file);
-        for (var i = 0, l = this.memory.data.length; i < l; i++) {
-            if(i != 0 && i % 16 == 0) f.write("\n")
-            f.write(this.memory.data[i].toString(16).padStart(2, '0') + " ")
-        }
+        var outputJS = {}
+        outputJS["memory"]=this.memory.data
+        outputJS["labels"]=this.labels
+        outputJS["cpu"]=this.cpu
+        f.write(JSON.stringify(outputJS))
     }
 
-    getOutput(){
+    getOutput() {
         let str = ""
-        for(let i = 925; i < this.memory.data.length; i++){
+        for (let i = 925; i < this.memory.data.length; i++) {
             str += String.fromCharCode(this.memory.data[i])
         }
         return str
@@ -88,10 +81,10 @@ class Emulator{
 
     show(file = null) {
         let str = this.getOutput()
-        if(file == null){
+        if (file == null) {
             console.log(str)
         }
-        else{
+        else {
             fs.writeFileSync(file, str)
         }
     }

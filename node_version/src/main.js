@@ -1,11 +1,16 @@
 const { Emulator } = require('./emulator/emulator.js');
 
 const fs = require('fs');
-const code = fs.readFileSync('hello_world.txt', 'utf8')
+
+let filename = 'hello_world.txt';
+if (process.argv.length === 3) {
+    filename = process.argv[2]
+}
+const code = fs.readFileSync(filename, 'utf8')
 const emulator = new Emulator();
 emulator.assemble(code);
 if(emulator.error) throw new Error(emulator.error);
 emulator.run();
 if(emulator.error) throw new Error(emulator.error);
-emulator.dump('test.dat')
-emulator.show();
+emulator.dump('out.dat')
+

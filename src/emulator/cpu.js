@@ -1,6 +1,6 @@
-app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
+app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
     var cpu = {
-        step: function () {
+        step: function() {
             var self = this;
 
             if (self.fault === true) {
@@ -8,7 +8,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
             }
 
             try {
-                var checkGPR = function (reg) {
+                var checkGPR = function(reg) {
                     if (reg < 0 || reg >= self.gpr.length) {
                         throw "Invalid register: " + reg;
                     } else {
@@ -16,7 +16,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     }
                 };
 
-                var checkGPR_SP = function (reg) {
+                var checkGPR_SP = function(reg) {
                     if (reg < 0 || reg >= 1 + self.gpr.length) {
                         throw "Invalid register: " + reg;
                     } else {
@@ -24,7 +24,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     }
                 };
 
-                var setGPR_SP = function (reg, value) {
+                var setGPR_SP = function(reg, value) {
                     if (reg >= 0 && reg < self.gpr.length) {
                         self.gpr[reg] = value;
                     } else if (reg == self.gpr.length) {
@@ -41,7 +41,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     }
                 };
 
-                var getGPR_SP = function (reg) {
+                var getGPR_SP = function(reg) {
                     if (reg >= 0 && reg < self.gpr.length) {
                         return self.gpr[reg];
                     } else if (reg == self.gpr.length) {
@@ -51,7 +51,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     }
                 };
 
-                var indirectRegisterAddress = function (value) {
+                var indirectRegisterAddress = function(value) {
                     var reg = value % 8;
 
                     var base;
@@ -68,7 +68,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     return base + offset;
                 };
 
-                var checkOperation = function (value) {
+                var checkOperation = function(value) {
                     self.zero = false;
                     self.carry = false;
 
@@ -85,7 +85,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     return value;
                 };
 
-                var jump = function (newIP) {
+                var jump = function(newIP) {
                     if (newIP < 0 || newIP >= memory.data.length) {
                         throw "IP outside memory";
                     } else {
@@ -93,7 +93,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     }
                 };
 
-                var push = function (value) {
+                var push = function(value) {
                     self.sp -= 2;
                     memory.store16(self.sp, value);
                     if (self.sp < self.minSP) {
@@ -101,7 +101,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     }
                 };
 
-                var pop = function () {
+                var pop = function() {
                     var value = memory.load16(self.sp);
                     self.sp += 2;
                     if (self.sp > self.maxSP) {
@@ -110,7 +110,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                     return value;
                 };
 
-                var division = function (divisor) {
+                var division = function(divisor) {
                     if (divisor === 0) {
                         throw "Division by 0";
                     }
@@ -450,12 +450,12 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                         break;
                     case opcodes.CALL_REGADDRESS:
                         regTo = checkGPR(memory.load16(++self.ip));
-                        push(self.ip+2);
+                        push(self.ip + 2);
                         jump(self.gpr[regTo]);
                         break;
                     case opcodes.CALL_ADDRESS:
                         number = memory.load16(++self.ip);
-                        push(self.ip+2);
+                        push(self.ip + 2);
                         jump(number);
                         break;
                     case opcodes.RET:
@@ -686,7 +686,7 @@ app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
                 throw e;
             }
         },
-        reset: function () {
+        reset: function() {
             var self = this;
             self.maxSP = 924;
             self.minSP = 0;
