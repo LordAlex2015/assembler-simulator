@@ -9,8 +9,13 @@ if (process.argv.length === 3) {
 const code = fs.readFileSync(filename, 'utf8')
 const emulator = new Emulator();
 emulator.assemble(code);
-if(emulator.error) throw new Error(emulator.error);
+if (emulator.error) {
+    fs.writeFileSync("assembly_error", emulator.error);
+    throw new Error(emulator.error);
+}
 emulator.run();
-if(emulator.error) throw new Error(emulator.error);
+if (emulator.error) {
+    fs.writeFileSync("runtime_error", emulator.error);
+    throw new Error(emulator.error);
+}
 emulator.dump('out.dat')
-

@@ -680,9 +680,9 @@ var app = angular.module('ASMSimulator', []);
         }
     };
 }]);
-;app.service('cpu', ['opcodes', 'memory', function (opcodes, memory) {
+;app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
     var cpu = {
-        step: function () {
+        step: function() {
             var self = this;
 
             if (self.fault === true) {
@@ -690,7 +690,7 @@ var app = angular.module('ASMSimulator', []);
             }
 
             try {
-                var checkGPR = function (reg) {
+                var checkGPR = function(reg) {
                     if (reg < 0 || reg >= self.gpr.length) {
                         throw "Invalid register: " + reg;
                     } else {
@@ -698,7 +698,7 @@ var app = angular.module('ASMSimulator', []);
                     }
                 };
 
-                var checkGPR_SP = function (reg) {
+                var checkGPR_SP = function(reg) {
                     if (reg < 0 || reg >= 1 + self.gpr.length) {
                         throw "Invalid register: " + reg;
                     } else {
@@ -706,7 +706,7 @@ var app = angular.module('ASMSimulator', []);
                     }
                 };
 
-                var setGPR_SP = function (reg, value) {
+                var setGPR_SP = function(reg, value) {
                     if (reg >= 0 && reg < self.gpr.length) {
                         self.gpr[reg] = value;
                     } else if (reg == self.gpr.length) {
@@ -723,7 +723,7 @@ var app = angular.module('ASMSimulator', []);
                     }
                 };
 
-                var getGPR_SP = function (reg) {
+                var getGPR_SP = function(reg) {
                     if (reg >= 0 && reg < self.gpr.length) {
                         return self.gpr[reg];
                     } else if (reg == self.gpr.length) {
@@ -733,7 +733,7 @@ var app = angular.module('ASMSimulator', []);
                     }
                 };
 
-                var indirectRegisterAddress = function (value) {
+                var indirectRegisterAddress = function(value) {
                     var reg = value % 8;
 
                     var base;
@@ -750,7 +750,7 @@ var app = angular.module('ASMSimulator', []);
                     return base + offset;
                 };
 
-                var checkOperation = function (value) {
+                var checkOperation = function(value) {
                     self.zero = false;
                     self.carry = false;
 
@@ -767,7 +767,7 @@ var app = angular.module('ASMSimulator', []);
                     return value;
                 };
 
-                var jump = function (newIP) {
+                var jump = function(newIP) {
                     if (newIP < 0 || newIP >= memory.data.length) {
                         throw "IP outside memory";
                     } else {
@@ -775,7 +775,7 @@ var app = angular.module('ASMSimulator', []);
                     }
                 };
 
-                var push = function (value) {
+                var push = function(value) {
                     self.sp -= 2;
                     memory.store16(self.sp, value);
                     if (self.sp < self.minSP) {
@@ -783,7 +783,7 @@ var app = angular.module('ASMSimulator', []);
                     }
                 };
 
-                var pop = function () {
+                var pop = function() {
                     var value = memory.load16(self.sp);
                     self.sp += 2;
                     if (self.sp > self.maxSP) {
@@ -792,7 +792,7 @@ var app = angular.module('ASMSimulator', []);
                     return value;
                 };
 
-                var division = function (divisor) {
+                var division = function(divisor) {
                     if (divisor === 0) {
                         throw "Division by 0";
                     }
@@ -879,6 +879,8 @@ var app = angular.module('ASMSimulator', []);
                         self.ip++;
                         regFrom = checkGPR_SP(memory.load16(++self.ip));
                         self.ip++;
+                        console.log(getGPR_SP(regTo));
+                        console.log(getGPR_SP(regFrom));
                         setGPR_SP(regTo, checkOperation(getGPR_SP(regTo) + getGPR_SP(regFrom)));
                         self.ip++;
                         break;
@@ -1132,13 +1134,12 @@ var app = angular.module('ASMSimulator', []);
                         break;
                     case opcodes.CALL_REGADDRESS:
                         regTo = checkGPR(memory.load16(++self.ip));
-                        push(self.ip+2);
+                        push(self.ip + 2);
                         jump(self.gpr[regTo]);
                         break;
                     case opcodes.CALL_ADDRESS:
-                        console.log("Calling function");
                         number = memory.load16(++self.ip);
-                        push(self.ip+2);
+                        push(self.ip + 2);
                         jump(number);
                         break;
                     case opcodes.RET:
@@ -1369,7 +1370,7 @@ var app = angular.module('ASMSimulator', []);
                 throw e;
             }
         },
-        reset: function () {
+        reset: function() {
             var self = this;
             self.maxSP = 924;
             self.minSP = 0;

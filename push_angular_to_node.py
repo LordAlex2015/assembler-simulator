@@ -66,7 +66,7 @@ def main():
         },
         lastLine={"val": "cpu.reset();", "shouldWrite": True},
         linesToModify={
-            "step: function () {": "step: function (memory,opcodes) {\n"}
+            "step: function() {": "step: function (memory,opcodes) {\n"}
     )
 
     translate_opcodes = translator_generator(

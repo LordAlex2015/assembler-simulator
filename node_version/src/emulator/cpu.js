@@ -7,7 +7,7 @@ step: function (memory,opcodes) {
             }
 
             try {
-                var checkGPR = function (reg) {
+                var checkGPR = function(reg) {
                     if (reg < 0 || reg >= self.gpr.length) {
                         throw "Invalid register: " + reg;
                     } else {
@@ -15,7 +15,7 @@ step: function (memory,opcodes) {
                     }
                 };
 
-                var checkGPR_SP = function (reg) {
+                var checkGPR_SP = function(reg) {
                     if (reg < 0 || reg >= 1 + self.gpr.length) {
                         throw "Invalid register: " + reg;
                     } else {
@@ -23,7 +23,7 @@ step: function (memory,opcodes) {
                     }
                 };
 
-                var setGPR_SP = function (reg, value) {
+                var setGPR_SP = function(reg, value) {
                     if (reg >= 0 && reg < self.gpr.length) {
                         self.gpr[reg] = value;
                     } else if (reg == self.gpr.length) {
@@ -40,7 +40,7 @@ step: function (memory,opcodes) {
                     }
                 };
 
-                var getGPR_SP = function (reg) {
+                var getGPR_SP = function(reg) {
                     if (reg >= 0 && reg < self.gpr.length) {
                         return self.gpr[reg];
                     } else if (reg == self.gpr.length) {
@@ -50,7 +50,7 @@ step: function (memory,opcodes) {
                     }
                 };
 
-                var indirectRegisterAddress = function (value) {
+                var indirectRegisterAddress = function(value) {
                     var reg = value % 8;
 
                     var base;
@@ -67,7 +67,7 @@ step: function (memory,opcodes) {
                     return base + offset;
                 };
 
-                var checkOperation = function (value) {
+                var checkOperation = function(value) {
                     self.zero = false;
                     self.carry = false;
 
@@ -84,7 +84,7 @@ step: function (memory,opcodes) {
                     return value;
                 };
 
-                var jump = function (newIP) {
+                var jump = function(newIP) {
                     if (newIP < 0 || newIP >= memory.data.length) {
                         throw "IP outside memory";
                     } else {
@@ -92,7 +92,7 @@ step: function (memory,opcodes) {
                     }
                 };
 
-                var push = function (value) {
+                var push = function(value) {
                     self.sp -= 2;
                     memory.store16(self.sp, value);
                     if (self.sp < self.minSP) {
@@ -100,7 +100,7 @@ step: function (memory,opcodes) {
                     }
                 };
 
-                var pop = function () {
+                var pop = function() {
                     var value = memory.load16(self.sp);
                     self.sp += 2;
                     if (self.sp > self.maxSP) {
@@ -109,7 +109,7 @@ step: function (memory,opcodes) {
                     return value;
                 };
 
-                var division = function (divisor) {
+                var division = function(divisor) {
                     if (divisor === 0) {
                         throw "Division by 0";
                     }
@@ -196,6 +196,8 @@ step: function (memory,opcodes) {
                         self.ip++;
                         regFrom = checkGPR_SP(memory.load16(++self.ip));
                         self.ip++;
+                        console.log(getGPR_SP(regTo));
+                        console.log(getGPR_SP(regFrom));
                         setGPR_SP(regTo, checkOperation(getGPR_SP(regTo) + getGPR_SP(regFrom)));
                         self.ip++;
                         break;
@@ -449,12 +451,12 @@ step: function (memory,opcodes) {
                         break;
                     case opcodes.CALL_REGADDRESS:
                         regTo = checkGPR(memory.load16(++self.ip));
-                        push(self.ip+2);
+                        push(self.ip + 2);
                         jump(self.gpr[regTo]);
                         break;
                     case opcodes.CALL_ADDRESS:
                         number = memory.load16(++self.ip);
-                        push(self.ip+2);
+                        push(self.ip + 2);
                         jump(number);
                         break;
                     case opcodes.RET:
@@ -685,7 +687,7 @@ step: function (memory,opcodes) {
                 throw e;
             }
         },
-        reset: function () {
+        reset: function() {
             var self = this;
             self.maxSP = 924;
             self.minSP = 0;
