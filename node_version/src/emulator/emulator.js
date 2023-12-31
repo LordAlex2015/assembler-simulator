@@ -20,10 +20,12 @@ class Emulator {
 
     assemble(code) {
         try {
+            this.memory.reset();
             this.assembly = asm.go(code);
             this.mapping = this.assembly.mapping;
             this.binary = this.assembly.code;
             this.labels = this.assembly.labels;
+
 
             if (this.binary.length > memory.data.length)
                 throw "Binary code does not fit into the memory. Max " + memory.data.length + " bytes are allowed";
@@ -57,6 +59,7 @@ class Emulator {
     }
 
     run() {
+        this.cpu.reset();
         while (this.executeStep() === true) {
         }
     }
