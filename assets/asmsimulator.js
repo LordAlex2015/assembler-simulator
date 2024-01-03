@@ -5,7 +5,7 @@ var app = angular.module('ASMSimulator', []);
             // Use https://www.debuggex.com/
             // Matches: "label: INSTRUCTION (["')OPERAND1(]"'), (["')OPERAND2(]"')
             // GROUPS:      1       2               3                    7
-            var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
+            var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{1,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
 
             // Regex group indexes for operands
             var op1_group = 3;
@@ -175,6 +175,7 @@ var app = angular.module('ASMSimulator', []);
 
                 if (upperLabel === "A" || upperLabel === "B" || upperLabel === "C" || upperLabel === "D")
                     throw "Label contains keyword: " + upperLabel;
+                console.log(upperLabel);
 
                 labels[label] = code.length;
             };
@@ -650,6 +651,7 @@ var app = angular.module('ASMSimulator', []);
                         }
                     } else {
                         // Check if line starts with a comment otherwise the line contains an error and can not be parsed
+                        console.log("inside else");
                         var line = lines[i].trim();
                         if (line !== "" && line.slice(0, 1) !== ";") {
                             throw "Syntax error";
@@ -879,8 +881,6 @@ var app = angular.module('ASMSimulator', []);
                         self.ip++;
                         regFrom = checkGPR_SP(memory.load16(++self.ip));
                         self.ip++;
-                        console.log(getGPR_SP(regTo));
-                        console.log(getGPR_SP(regFrom));
                         setGPR_SP(regTo, checkOperation(getGPR_SP(regTo) + getGPR_SP(regFrom)));
                         self.ip++;
                         break;
@@ -1646,7 +1646,6 @@ var app = angular.module('ASMSimulator', []);
             $scope.mapping = assembly.mapping;
             var binary = assembly.code;
             $scope.labels = assembly.labels;
-            console.log($scope.labels);
 
             if (binary.length > memory.data.length)
                 throw "Binary code does not fit into the memory. Max " + memory.data.length + " bytes are allowed";

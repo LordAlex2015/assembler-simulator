@@ -65,13 +65,11 @@ class Emulator {
     }
 
     dump(file) {
-
-        var f = fs.createWriteStream(file);
         var outputJS = {}
         outputJS["memory"]=this.memory.data
         outputJS["labels"]=this.labels
         outputJS["cpu"]=this.cpu
-        f.write(JSON.stringify(outputJS))
+        fs.writeFileSync(file, JSON.stringify(outputJS));
     }
 
     getOutput() {
