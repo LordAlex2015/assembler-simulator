@@ -2,7 +2,7 @@ const { Runner } = require('./src/runner.js');
 
 const fs = require('fs');
 
-let filename = 'hello_world.txt';
+let filename = 'hello_world.asm';
 if (process.argv.length === 3) {
     filename = process.argv[2]
 }

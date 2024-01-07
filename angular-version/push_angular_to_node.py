@@ -94,13 +94,13 @@ def main():
 
     filesToTranslate = {
         FileToTranslate("src/emulator/memory.js",
-                        "../node_version/src/emulator/memory.js", translate_memory),
+                        "../node-version/src/emulator/memory.js", translate_memory),
         FileToTranslate("src/emulator/cpu.js",
-                        "../node_version/src/emulator/cpu.js", translate_cpu),
+                        "../node-version/src/emulator/cpu.js", translate_cpu),
         FileToTranslate("src/emulator/opcodes.js",
-                        "../node_version/src/emulator/opcodes.js", translate_opcodes),
+                        "../node-version/src/emulator/opcodes.js", translate_opcodes),
         FileToTranslate("src/assembler/asm.js",
-                        "../node_version/src/assembler/asm.js", translate_asm)
+                        "../node-version/src/assembler/asm.js", translate_asm)
     }
     for f in filesToTranslate:
         f.transform()
