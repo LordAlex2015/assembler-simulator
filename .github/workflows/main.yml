@@ -1,0 +1,26 @@
+name: Deploy via SSH
+on: 
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        proxy_host: ${{ secrets.SSH_HOST_PROXY }}
+        proxy_username: ${{ secrets.SSH_USERNAME_PROXY }}
+        proxy_key: ${{ secrets.SSH_KEY_PROXY }}
+        script: |
+          # git update to latest codebase on main branch
+          cd /root/workspace/assembler-simulator && git pull
+          # updating the .env file
+          cd
+          bash start_nginx.sh
+          
