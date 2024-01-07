@@ -173,7 +173,6 @@ var asm = {
 
                 if (upperLabel === "A" || upperLabel === "B" || upperLabel === "C" || upperLabel === "D")
                     throw "Label contains keyword: " + upperLabel;
-                console.log(upperLabel);
 
                 labels[label] = code.length;
             };
@@ -229,7 +228,6 @@ var asm = {
                                         code.push(p1.value, 0);
                                     }
                                     else {
-                                        console.log(p1.type);
                                         throw "DB does not support this operand : " + p1.type;
                                     }
                                     break;
@@ -649,7 +647,6 @@ var asm = {
                         }
                     } else {
                         // Check if line starts with a comment otherwise the line contains an error and can not be parsed
-                        console.log("inside else");
                         var line = lines[i].trim();
                         if (line !== "" && line.slice(0, 1) !== ";") {
                             throw "Syntax error";

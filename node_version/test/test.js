@@ -16,20 +16,19 @@ function runner_load16(runner, address) {
 
 describe('ASM', function() {
     describe('INC', function() {
-        const valsToTest = [0, 16];
+        const valsToTest = [0, 16, 1024, 13];
         for (let i = 0; i < valsToTest.length; i++) {
-            val = valsToTest[i];
-            let code =
-                `
+            it('Code should compile and produce the expected output', function() {
+                v = valsToTest[i];
+                let code =
+                    `
 MOV A, [x]
 INC A
 MOV [x], A
 HLT
-x: DB 16
-`
-            const runner = new Runner()
-            console.log(code);
-            it('Code should compile and produce the expected output', function() {
+x: DB ${v}
+`;
+                const runner = new Runner()
                 try {
                     runner.run(code);
                 } catch (error) {
@@ -37,11 +36,11 @@ x: DB 16
                 }
                 const res = fs.readFileSync(outputFileName, 'utf8')
                 parsedRes = JSON.parse(res);
-                var expected = 17;
+                var expected = v + 1;
                 var actual = runner_load16(runner, parsedRes["labels"]["x"]);
                 assert.equal(expected, actual);
             });
-        }
+        };
     });
 });
 

@@ -196,8 +196,6 @@ step: function (memory,opcodes) {
                         self.ip++;
                         regFrom = checkGPR_SP(memory.load16(++self.ip));
                         self.ip++;
-                        console.log(getGPR_SP(regTo));
-                        console.log(getGPR_SP(regFrom));
                         setGPR_SP(regTo, checkOperation(getGPR_SP(regTo) + getGPR_SP(regFrom)));
                         self.ip++;
                         break;
