@@ -45,7 +45,7 @@ def run_test(asm_file, test_file):
             pass
 
         rc = subprocess.call(
-            "../node ../node_main.js file_to_execute", shell=True)
+            "node ../node_main.js file_to_execute", shell=True)
 
         if os.path.isfile("assembly_error"):
             error = open("assembly_error", "r").read()
@@ -63,10 +63,10 @@ def run_test(asm_file, test_file):
             if (res != t[1][key]):
                 feedback_string += ' | '
                 feedback_string = "Votre code ne passe pas le test suivant : " + feedback_string
-                feedback_string += f' attendu : {t[1][key]}, observé : {res}'
+                feedback_string += f' {key} attendu : {t[1][key]}, {key} observé : {res} || '
                 print(feedback_string)
             else:
-                feedback_string = "Votre code passe pas le test suivant : " + feedback_string
+                feedback_string = "Votre code passe le test suivant : " + feedback_string
                 print(feedback_string)
 
 
