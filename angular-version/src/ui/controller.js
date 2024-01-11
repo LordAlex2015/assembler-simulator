@@ -1,4 +1,4 @@
-app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'assembler', function ($document, $scope, $timeout, cpu, memory, assembler) {
+app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'assembler', function($document, $scope, $timeout, cpu, memory, assembler) {
     $scope.memory = memory;
     $scope.cpu = cpu;
     $scope.error = '';
@@ -9,26 +9,53 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
     $scope.displayB = false;
     $scope.displayC = false;
     $scope.displayD = false;
-    $scope.speeds = [{speed: 1, desc: "1 HZ"},
-                     {speed: 4, desc: "4 HZ"},
-                     {speed: 8, desc: "8 HZ"},
-                     {speed: 16, desc: "16 HZ"}];
+    $scope.speeds = [{ speed: 1, desc: "1 HZ" },
+    { speed: 4, desc: "4 HZ" },
+    { speed: 8, desc: "8 HZ" },
+    { speed: 16, desc: "16 HZ" }];
     $scope.speed = 4;
     $scope.outputStartIndex = 925;
 
-    $scope.code = "; Simple example\n; Writes Hello World to the output\n\n	JMP start\nhello: DB \"Hello World!\" ; Variable\n       DB 0	; String terminator\n\nstart:\n	MOV C, hello    ; Point to var \n	MOV D, 925	; Point to output\n	CALL print\n        HLT             ; Stop execution\n\nprint:			; print(C:*from, D:*to)\n	PUSH A\n	PUSH B\n	MOV B, 0\n.loop:\n	MOV A, [C]	; Get char from var\n	MOV [D], A	; Write to output\n	INC C\n	INC D\n	INC C\n	INC D\n	CMP B, [C]	; Check if end\n	JNZ .loop	; jump if not\n\n	POP B\n	POP A\n	RET";
-
-    $scope.reset = function () {
+    $scope.code = [
+        '; Simple example',
+        '; Writes Hello World to the output',
+        '   JMP start',
+        'hello: DB "Hello World!" ; Variable',
+        '       DB 0	; String terminator',
+        'start:',
+        '   MOV D, hello    ; Point to var',
+        '   PUSH 925	; Point to output',
+        '   CALL print',
+        '   HLT             ; Stop execution',
+        'print:		; print(D:*from, SP+2:*to)',
+        '   PUSH C',
+        '   PUSH B',
+        '   MOV C, [SP+6]',
+        '   MOV B, 0',
+        '.loop:',
+        '   MOV A, [D]	; Get char from var',
+        '   MOV [C], A	; Write to output',
+        '   INC D',
+        '   INC C',
+        '   INC D',
+        '   INC C',
+        '   CMP B, [D]	; Check if end',
+        '   JNZ .loop	; jump if not',
+        '   POP B',
+        '   POP C',
+        '   RET',
+    ].join('\n');
+    $scope.reset = function() {
         cpu.reset();
         memory.reset();
         $scope.error = '';
         $scope.selectedLine = -1;
     };
 
-    $scope.downloadCode = function () {
+    $scope.downloadCode = function() {
         var link = document.createElement('a');
         var content = $scope.code;
-        var file = new Blob([content], {type: 'text/plain'});
+        var file = new Blob([content], { type: 'text/plain' });
         link.href = URL.createObjectURL(file);
         link.download = 'code.asm';
         document.body.appendChild(link);
@@ -37,18 +64,18 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         document.body.removeChild(link);
     };
 
-    $scope.loadFile = function () {
+    $scope.loadFile = function() {
         var file = document.querySelector("input").files[0];
         console.log(file);
         var reader = new FileReader();
-        reader.addEventListener("load", function (event) {
+        reader.addEventListener("load", function(event) {
             $scope.code = event.target.result;
             $scope.$apply();
         });
         reader.readAsText(file, "UTF-8");
     };
 
-    $scope.executeStep = function () {
+    $scope.executeStep = function() {
         if (!$scope.checkPrgrmLoaded()) {
             $scope.assemble();
         }
@@ -70,13 +97,13 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
     };
 
     var runner;
-    $scope.run = function () {
+    $scope.run = function() {
         if (!$scope.checkPrgrmLoaded()) {
             $scope.assemble();
         }
 
         $scope.isRunning = true;
-        runner = $timeout(function () {
+        runner = $timeout(function() {
             if ($scope.executeStep() === true) {
                 $scope.run();
             } else {
@@ -85,12 +112,12 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         }, 1000 / $scope.speed);
     };
 
-    $scope.stop = function () {
+    $scope.stop = function() {
         $timeout.cancel(runner);
         $scope.isRunning = false;
     };
 
-    $scope.checkPrgrmLoaded = function () {
+    $scope.checkPrgrmLoaded = function() {
         for (var i = 0, l = memory.data.length; i < l; i++) {
             if (memory.data[i] !== 0) {
                 return true;
@@ -100,7 +127,7 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         return false;
     };
 
-    $scope.getChar = function (value) {
+    $scope.getChar = function(value) {
         var text = String.fromCharCode(value);
 
         if (text.trim() === '') {
@@ -110,7 +137,7 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         }
     };
 
-    $scope.assemble = function () {
+    $scope.assemble = function() {
         try {
             $scope.reset();
 
@@ -135,19 +162,19 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         }
     };
 
-    $scope.jumpToLine = function (index) {
+    $scope.jumpToLine = function(index) {
         $document[0].getElementById('sourceCode').scrollIntoView();
         $scope.selectedLine = $scope.mapping[index];
     };
 
 
-    $scope.isInstruction = function (index) {
+    $scope.isInstruction = function(index) {
         return $scope.mapping !== undefined &&
             $scope.mapping[index] !== undefined &&
             $scope.displayInstr;
     };
 
-    $scope.getMemoryCellCss = function (index) {
+    $scope.getMemoryCellCss = function(index) {
         if (index >= $scope.outputStartIndex) {
             return 'output-bg';
         } else if ($scope.isInstruction(index)) {
@@ -159,7 +186,7 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         }
     };
 
-    $scope.getMemoryInnerCellCss = function (index) {
+    $scope.getMemoryInnerCellCss = function(index) {
         if (index === cpu.ip) {
             return 'marker marker-ip';
         } else if (index === cpu.sp) {
