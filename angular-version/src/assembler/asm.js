@@ -223,7 +223,6 @@ app.service('assembler', ['opcodes', function(opcodes) {
                                         for (var j = 0, k = p1.value.length; j < k; j++) {
                                             code.push(0, p1.value[j]);
                                         }
-                                        code.push(0, 0);
                                     }
                                     else if (p1.type === "address") {
                                         code.push(p1.value, 0);

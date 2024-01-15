@@ -103,10 +103,6 @@ def print_feedbacks(res, tests, feedbacks, printer):
 
 def run_and_print_feedbacks(asm, tests, printer, feedbacks):
     res = run_test(asm, tests)
-    feedbacks = {"success": default_success_feedback,
-                 "failure": default_failure_feedback,
-                 "assembly_error": default_assembly_error_feedback,
-                 "run_time_error": default_runtime_error_feedback}
     print_feedbacks(res, tests, feedbacks, printer)
     return res
 

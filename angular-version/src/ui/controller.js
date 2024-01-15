@@ -136,6 +136,14 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
             return text;
         }
     };
+    $scope.get8HigherBits = function(value) {
+        return (value >> 8) & 0xFF;
+    };
+    $scope.get8LowerBits = function(value) {
+        return value & 0xFF;
+    };
+
+
 
     $scope.assemble = function() {
         try {

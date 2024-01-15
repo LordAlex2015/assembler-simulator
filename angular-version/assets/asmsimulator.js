@@ -224,7 +224,6 @@ var app = angular.module('ASMSimulator', []);
                                         for (var j = 0, k = p1.value.length; j < k; j++) {
                                             code.push(0, p1.value[j]);
                                         }
-                                        code.push(0, 0);
                                     }
                                     else if (p1.type === "address") {
                                         code.push(p1.value, 0);
@@ -1661,6 +1660,14 @@ var app = angular.module('ASMSimulator', []);
             return text;
         }
     };
+    $scope.get8HigherBits = function(value) {
+        return (value >> 8) & 0xFF;
+    };
+    $scope.get8LowerBits = function(value) {
+        return value & 0xFF;
+    };
+
+
 
     $scope.assemble = function() {
         try {
