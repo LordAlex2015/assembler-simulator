@@ -16,10 +16,18 @@ def run_test(asm_file, test_file):
         '''
         feedback_string = ''
         for key in t[0]:
-            feedback_string += f'{key} : {t[0][key]}, '
-            code_to_execute += f'''
-            {key}: DB {t[0][key]}
-            '''
+            elem = t[0][key]
+            feedback_string += f'{key} : {elem}, '
+            if type(elem) is list:
+                code_to_execute += f'''
+                {key}:
+                '''
+                for i in range(len(elem)):
+                    code_to_execute += f'''DB {elem[i]}\n'''
+            else:
+                code_to_execute += f'''
+                {key}: DB {t[0][key]}
+                '''
         file_for_node = open("file_to_execute", "w")
         file_for_node.write(code_to_execute)
         file_for_node.close()
@@ -49,11 +57,25 @@ def run_test(asm_file, test_file):
         for key in t[1]:
             values = {}
             registers = ["A", "B", "C", "D"]
+            res = None
             if key in registers:
                 res = load16(data["cpu"]["gpr"]
                              [registers.index(key)], data["memory"])
             else:
-                res = load16(data["labels"][key], data["memory"])
+                if type(t[1][key]) is list:
+                    array = []
+
+                    for i in range(len(t[1][key])):
+                        elem = t[1][key][i]
+                        if type(elem) is int:
+                            array.append(
+                                load16(data["labels"][key]+(2*i), data["memory"]))
+                        else:
+                            array.append("?")
+                            elem = "?"
+                    res = array
+                else:
+                    res = load16(data["labels"][key], data["memory"])
 
             values[key] = res
             if (res != t[1][key]):
@@ -119,6 +141,3 @@ def run_and_print_feedbacks_generic(asm, tests, printer):
         if r["type"] == "success":
             grade += 100/len(res)
     return grade
-
-
-
