@@ -59,8 +59,7 @@ def run_test(asm_file, test_file):
             registers = ["A", "B", "C", "D"]
             res = None
             if key in registers:
-                res = load16(data["cpu"]["gpr"]
-                             [registers.index(key)], data["memory"])
+                res = data["cpu"]["gpr"][registers.index(key)]
             else:
                 if type(t[1][key]) is list:
                     array = []
