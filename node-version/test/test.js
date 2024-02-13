@@ -66,7 +66,6 @@ function runner_get_register(runner, reg) {
     return runner.emulator.cpu.gpr[regs[reg]];
 }
 function runner_get_flags(runner, flag) {
-    var regs = { "A": 0, "B": 1, "C": 2, "D": 3 }
     return runner.emulator.cpu[flag];
 }
 
