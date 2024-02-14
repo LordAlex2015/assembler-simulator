@@ -24,6 +24,10 @@ def run_test(asm_file, test_file):
                 '''
                 for i in range(len(elem)):
                     code_to_execute += f'''DB {elem[i]}\n'''
+            elif type(elem) is str:
+                code_to_execute += f'''
+                {key}: DB "{t[0][key]}"
+                '''
             else:
                 code_to_execute += f'''
                 {key}: DB {t[0][key]}
@@ -54,12 +58,19 @@ def run_test(asm_file, test_file):
         data = json.loads(open("out.dat", "r").read())
 
         do_test_pass = True
+        values = {}
         for key in t[1]:
-            values = {}
             registers = ["A", "B", "C", "D"]
             res = None
             if key in registers:
                 res = data["cpu"]["gpr"][registers.index(key)]
+            elif type(t[1][key]) is str:
+                res = ""
+                elem = t[1][key]
+                for i in range(len(elem)):
+                    res += chr(load16(data["labels"][key] +
+                                      (2*i), data["memory"]))
+
             else:
                 if type(t[1][key]) is list:
                     array = []
