@@ -26,7 +26,7 @@ def run_test(asm_file, test_file):
                     code_to_execute += f'''DB {elem[i]}\n'''
             else:
                 code_to_execute += f'''
-                {key}: DB {t[0][key]}
+                {key}: DB "{t[0][key]}"
                 '''
         file_for_node = open("file_to_execute", "w")
         file_for_node.write(code_to_execute)
@@ -60,6 +60,13 @@ def run_test(asm_file, test_file):
             res = None
             if key in registers:
                 res = data["cpu"]["gpr"][registers.index(key)]
+            elif type(t[1][key]) is str:
+                res = ""
+                elem = t[1][key]
+                for i in range(len(elem)):
+                    res += chr(load16(data["labels"][key] +
+                                      (2*i), data["memory"]))
+
             else:
                 if type(t[1][key]) is list:
                     array = []
