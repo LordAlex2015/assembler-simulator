@@ -40,7 +40,7 @@ def run_test(asm_file, test_file):
         except OSError:
             pass
 
-        rc = subprocess.call(
+        subprocess.call(
             f"node {os.path.dirname(os.path.abspath(__file__))}/../node_main.js file_to_execute", shell=True)
 
         if os.path.isfile("assembly_error"):
@@ -106,7 +106,7 @@ def default_failure_feedback(test, res, printer):
 
 
 def default_runtime_error_feedback(test, res, printer):
-    feedback = print(f"- your code produce a runtime_error : {res['value']}\n")
+    feedback = f"- your code produce a runtime_error : {res['value']}\n"
     printer(feedback)
 
 
@@ -140,7 +140,7 @@ def run_and_print_feedbacks_generic(asm, tests, printer):
     feedbacks = {"success": default_success_feedback,
                  "failure": default_failure_feedback,
                  "assembly_error": default_assembly_error_feedback,
-                 "run_time_error": default_runtime_error_feedback}
+                 "runtime_error": default_runtime_error_feedback}
     res = run_and_print_feedbacks(asm, tests, printer, feedbacks)
     grade = 0
     for r in res:
