@@ -11,27 +11,22 @@ def run_test(asm_file, test_file):
     ret_list = []
     for t in test_file:
         code_to_execute = asm_file
-        code_to_execute += '''
-        HLT
-        '''
+        code_to_execute += 'HLT\n'
         feedback_string = ''
         for key in t[0]:
             elem = t[0][key]
             feedback_string += f'{key} : {elem}, '
+            if key != "_":
+                code_to_execute += f'{key}:'
             if type(elem) is list:
-                code_to_execute += f'''
-                {key}:
-                '''
                 for i in range(len(elem)):
                     code_to_execute += f'''DB {elem[i]}\n'''
             elif type(elem) is str:
-                code_to_execute += f'''
-                {key}: DB "{t[0][key]}"
-                '''
+                code_to_execute += f'''DB "{t[0][key]}"\n'''
             else:
-                code_to_execute += f'''
-                {key}: DB {t[0][key]}
-                '''
+                code_to_execute += f'''DB {t[0][key]}\n'''
+
+        del t[0]["_"]
         file_for_node = open("file_to_execute", "w")
         file_for_node.write(code_to_execute)
         file_for_node.close()
