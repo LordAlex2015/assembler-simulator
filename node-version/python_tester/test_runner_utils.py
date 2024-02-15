@@ -16,7 +16,7 @@ def run_test(asm_file, test_file):
         for key in t[0]:
             elem = t[0][key]
             feedback_string += f'{key} : {elem}, '
-            if key != "_":
+            if key[0] != "_":
                 code_to_execute += f'{key}:'
             if type(elem) is list:
                 for i in range(len(elem)):
@@ -26,8 +26,13 @@ def run_test(asm_file, test_file):
             else:
                 code_to_execute += f'''DB {t[0][key]}\n'''
 
-        if "_" in t[0]:
-            del t[0]["_"]
+        unnamed_vars = []
+        for key in t[0]:
+            if key[0] == "_":
+                unnamed_vars.append(key)
+        for key in unnamed_vars:
+            del t[0][key]
+
         file_for_node = open("file_to_execute", "w")
         file_for_node.write(code_to_execute)
         file_for_node.close()
@@ -66,22 +71,19 @@ def run_test(asm_file, test_file):
                 for i in range(len(elem)):
                     res += chr(load16(data["labels"][key] +
                                       (2*i), data["memory"]))
-
+            elif type(t[1][key]) is list:
+                array = []
+                for i in range(len(t[1][key])):
+                    elem = t[1][key][i]
+                    if type(elem) is int:
+                        array.append(
+                            load16(data["labels"][key]+(2*i), data["memory"]))
+                    else:
+                        array.append("?")
+                        elem = "?"
+                res = array
             else:
-                if type(t[1][key]) is list:
-                    array = []
-
-                    for i in range(len(t[1][key])):
-                        elem = t[1][key][i]
-                        if type(elem) is int:
-                            array.append(
-                                load16(data["labels"][key]+(2*i), data["memory"]))
-                        else:
-                            array.append("?")
-                            elem = "?"
-                    res = array
-                else:
-                    res = load16(data["labels"][key], data["memory"])
+                res = load16(data["labels"][key], data["memory"])
 
             values[key] = res
             if (res != t[1][key]):
