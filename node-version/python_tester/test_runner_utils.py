@@ -11,7 +11,7 @@ def run_test(asm_file, test_file):
     ret_list = []
     for t in test_file:
         code_to_execute = asm_file
-        code_to_execute += 'HLT\n'
+        code_to_execute += '\nHLT\n'
         feedback_string = ''
         for key in t[0]:
             elem = t[0][key]
