@@ -26,7 +26,8 @@ def run_test(asm_file, test_file):
             else:
                 code_to_execute += f'''DB {t[0][key]}\n'''
 
-        del t[0]["_"]
+        if "_" in t[0]:
+            del t[0]["_"]
         file_for_node = open("file_to_execute", "w")
         file_for_node.write(code_to_execute)
         file_for_node.close()
