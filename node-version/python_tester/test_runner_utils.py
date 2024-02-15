@@ -60,7 +60,15 @@ def run_test(asm_file, test_file):
 
         do_test_pass = True
         values = {}
+
         for key in t[1]:
+            actual_key = key
+            offset = 0
+            if "+" in key:
+                parsed_key = key.split("+")
+                actual_key = parsed_key[0]
+                offset = int(parsed_key[1])
+
             registers = ["A", "B", "C", "D"]
             res = None
             if key in registers:
@@ -69,7 +77,7 @@ def run_test(asm_file, test_file):
                 res = ""
                 elem = t[1][key]
                 for i in range(len(elem)):
-                    res += chr(load16(data["labels"][key] +
+                    res += chr(load16(data["labels"][actual_key] + offset +
                                       (2*i), data["memory"]))
             elif type(t[1][key]) is list:
                 array = []
@@ -77,13 +85,13 @@ def run_test(asm_file, test_file):
                     elem = t[1][key][i]
                     if type(elem) is int:
                         array.append(
-                            load16(data["labels"][key]+(2*i), data["memory"]))
+                            load16(data["labels"][actual_key]+(2*i)+offset, data["memory"]))
                     else:
                         array.append("?")
                         elem = "?"
                 res = array
             else:
-                res = load16(data["labels"][key], data["memory"])
+                res = load16(data["labels"][actual_key]+offset, data["memory"])
 
             values[key] = res
             if (res != t[1][key]):
