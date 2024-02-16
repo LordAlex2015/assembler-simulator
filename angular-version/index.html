@@ -159,14 +159,20 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <button type="button" class="btn btn-default navbar-btn"
+                            ng-click="changeRamDisplayMode()">Change RAM display mode (HEX/ASCII)</button>
                         <p class="text-muted">RAM</p>
                         <div style="width:29em;" class="source-code">
                             <div class="memory-block" ng-repeat="m in memory.data track by $index"
                                 ng-class="getMemoryCellCss($index)">
                                 <div ng-class="getMemoryInnerCellCss($index)" ng-switch="isInstruction($index)">
-                                    <small ng-switch-default>{{ m | number:displayHex }}</small>
+                                    <small ng-switch-default ng-show="ramDisplayMode === 'HEX'">{{ m | number:displayHex
+                                        }}</small>
+                                    <small ng-switch-default ng-show="ramDisplayMode === 'ASCII'">{{ getChar(m) }}</small>
                                     <a ng-switch-when="true" ng-click="jumpToLine($index)">
-                                        <small>{{ m | number:displayHex }}</small>
+                                        <small ng-show="ramDisplayMode === 'HEX'">{{ m | number:displayHex }}</small>
+                                        <small ng-show="ramDisplayMode === 'ASCII'">{{ getChar(m) }}</small>
                                     </a>
                                 </div>
                             </div>

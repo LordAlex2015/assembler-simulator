@@ -1539,6 +1539,7 @@ var app = angular.module('ASMSimulator', []);
     { speed: 16, desc: "16 HZ" }];
     $scope.speed = 4;
     $scope.outputStartIndex = 925;
+    $scope.ramDisplayMode = "HEX";
 
     $scope.code = [
         '; Simple example',
@@ -1733,6 +1734,13 @@ var app = angular.module('ASMSimulator', []);
             return 'marker marker-d';
         } else {
             return '';
+        }
+    };
+    $scope.changeRamDisplayMode = function() {
+        if ($scope.ramDisplayMode === 'ASCII') {
+            $scope.ramDisplayMode = 'HEX';
+        } else {
+            $scope.ramDisplayMode = 'ASCII';
         }
     };
 }]);

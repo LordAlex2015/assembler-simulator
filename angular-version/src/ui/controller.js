@@ -15,6 +15,7 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
     { speed: 16, desc: "16 HZ" }];
     $scope.speed = 4;
     $scope.outputStartIndex = 925;
+    $scope.ramDisplayMode = "HEX";
 
     $scope.code = [
         '; Simple example',
@@ -209,6 +210,13 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
             return 'marker marker-d';
         } else {
             return '';
+        }
+    };
+    $scope.changeRamDisplayMode = function() {
+        if ($scope.ramDisplayMode === 'ASCII') {
+            $scope.ramDisplayMode = 'HEX';
+        } else {
+            $scope.ramDisplayMode = 'ASCII';
         }
     };
 }]);
