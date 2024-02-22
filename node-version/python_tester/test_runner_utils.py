@@ -71,8 +71,10 @@ def run_test(asm_file, test_file):
 
             registers = ["A", "B", "C", "D"]
             res = None
-            if key in registers:
-                res = data["cpu"]["gpr"][registers.index(key)]
+            if actual_key in registers:
+                res = data["cpu"]["gpr"][registers.index(actual_key)]
+            elif actual_key.isnumeric():
+                res = load16(actual_key, data["memory"])
             elif key == "SP":
                 res = data["cpu"]["sp"]
             elif type(t[1][key]) is str:
