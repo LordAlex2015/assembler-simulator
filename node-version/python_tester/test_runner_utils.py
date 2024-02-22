@@ -73,6 +73,8 @@ def run_test(asm_file, test_file):
             res = None
             if key in registers:
                 res = data["cpu"]["gpr"][registers.index(key)]
+            elif key == "SP":
+                res = data["cpu"]["sp"]
             elif type(t[1][key]) is str:
                 res = ""
                 elem = t[1][key]
