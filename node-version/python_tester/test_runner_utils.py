@@ -114,7 +114,7 @@ def default_success_feedback(test, res, printer):
 
 def default_failure_feedback(test, res, printer):
     feedback = f"""- Your code failed the following test : {', '.join([f'{key} : {test[0][key]}' for key in test[0]])}
-        expected : {', '.join([f'{key} : {test[1][key]}' for key in test[1]])}
+        expected : {', '.join([f'{key} : {test[1][key]}' for key in test[1]])}\n
         actual : {', '.join([f'{key} : {res["value"][key]}' for key in res["value"]])}\n"""
     printer(feedback)
 
