@@ -2,20 +2,20 @@ import subprocess
 import json
 import os
 
+HIDDEN_KEYWORD = "avgUaZdcVA"
+
 
 def load16(index, arr):
     return (arr[index] << 8) + arr[index + 1]
 
 
-def run_test(asm_file, test_file):
+def run_test(asm_file, test_file, hidden_keyword=HIDDEN_KEYWORD):
     ret_list = []
     for t in test_file:
         code_to_execute = asm_file
         code_to_execute += '\nHLT\n'
-        feedback_string = ''
         for key in t[0]:
             elem = t[0][key]
-            feedback_string += f'{key} : {elem}, '
             if key[0] != "_":
                 code_to_execute += f'{key}:'
             if type(elem) is list:
@@ -107,13 +107,13 @@ def run_test(asm_file, test_file):
     return ret_list
 
 
-def default_success_feedback(test, res, printer):
-    feedback = f"- Your code passed the following test : {', '.join([f'{key} : {test[0][key]}' for key in test[0]])}\n"
+def default_success_feedback(test, res, printer, hidden_keyword=HIDDEN_KEYWORD):
+    feedback = f"""- Your code passed the following test : {', '.join([f'{key.replace(hidden_keyword,"hidden")} : {test[0][key]}' for key in test[0]])}\n"""
     printer(feedback)
 
 
-def default_failure_feedback(test, res, printer):
-    feedback = f"""- Your code failed the following test : {', '.join([f'{key} : {test[0][key]}' for key in test[0]])}
+def default_failure_feedback(test, res, printer, hidden_keyword=HIDDEN_KEYWORD):
+    feedback = f"""- Your code failed the following test : {', '.join([f'{key.replace(hidden_keyword,"hidden")} : {test[0][key]}' for key in test[0]])}
 
         | Expected : {', '.join([f'{key} : {test[1][key]}' for key in test[1]])}
         |   Actual : {', '.join([f'{key} : {res["value"][key]}' for key in res["value"]])}\n"""
@@ -130,33 +130,34 @@ def default_assembly_error_feedback(test, res, printer):
     printer(feedback)
 
 
-def print_feedbacks(res, tests, feedbacks, printer):
+def print_feedbacks(res, tests, feedbacks, printer, hidden_keyword=HIDDEN_KEYWORD):
     for i in range(len(res)):
         test_i = tests[i]
         res_i = res[i]
         if res[i]["type"] == "success":
-            feedbacks["success"](test_i, res_i, printer)
+            feedbacks["success"](test_i, res_i, printer, hidden_keyword)
         elif res[i]["type"] == "failure":
-            feedbacks["failure"](test_i, res_i, printer)
+            feedbacks["failure"](test_i, res_i, printer, hidden_keyword)
         elif res[i]["type"] == "assembly_error":
             feedbacks["assembly_error"](test_i, res_i, printer)
         elif res[i]["type"] == "runtime_error":
             feedbacks["runtime_error"](test_i, res_i, printer)
 
 
-def run_and_print_feedbacks(asm, tests, printer, feedbacks):
-    res = run_test(asm, tests)
-    print_feedbacks(res, tests, feedbacks, printer)
+def run_and_print_feedbacks(asm, tests, printer, feedbacks, hidden_keyword=HIDDEN_KEYWORD):
+    res = run_test(asm, tests, hidden_keyword)
+    print_feedbacks(res, tests, feedbacks, printer, hidden_keyword)
     return res
 
 
-def run_and_print_feedbacks_generic(asm, tests, printer):
+def run_and_print_feedbacks_generic(asm, tests, printer, hidden_keyword=HIDDEN_KEYWORD):
 
     feedbacks = {"success": default_success_feedback,
                  "failure": default_failure_feedback,
                  "assembly_error": default_assembly_error_feedback,
                  "runtime_error": default_runtime_error_feedback}
-    res = run_and_print_feedbacks(asm, tests, printer, feedbacks)
+    res = run_and_print_feedbacks(
+        asm, tests, printer, feedbacks, hidden_keyword=hidden_keyword)
     grade = 0
     for r in res:
         if r["type"] == "success":
