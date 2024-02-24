@@ -2,7 +2,7 @@ import subprocess
 import json
 import os
 
-HIDDEN_KEYWORD = "avgUaZdcVA"
+HIDDEN_KEYWORD = "hide_me"
 
 
 def load16(index, arr):
@@ -107,16 +107,27 @@ def run_test(asm_file, test_file, hidden_keyword=HIDDEN_KEYWORD):
     return ret_list
 
 
+def hide(elem, hidden_keyword=HIDDEN_KEYWORD):
+    if type(elem) is str:
+        return elem.replace(hidden_keyword, "*")
+    elif type(elem) is list:
+        ret = []
+        for e in elem:
+            ret.append(hide(e, hidden_keyword))
+        return ret
+    return elem
+
+
 def default_success_feedback(test, res, printer, hidden_keyword=HIDDEN_KEYWORD):
-    feedback = f"""- Your code passed the following test : {', '.join([f'{key.replace(hidden_keyword,"hidden")} : {test[0][key]}' for key in test[0]])}\n"""
+    feedback = f"""- Your code passed the following test : {', '.join([f'{hide(key,hidden_keyword)} : {hide(test[0][key],hidden_keyword)}' for key in test[0]])}\n"""
     printer(feedback)
 
 
 def default_failure_feedback(test, res, printer, hidden_keyword=HIDDEN_KEYWORD):
-    feedback = f"""- Your code failed the following test : {', '.join([f'{key.replace(hidden_keyword,"hidden")} : {test[0][key]}' for key in test[0]])}
+    feedback = f"""- Your code failed the following test : {', '.join([f'{hide(key,hidden_keyword)} : {hide(test[0][key],hidden_keyword)}' for key in test[0]])}
 
-        | Expected : {', '.join([f'{key} : {test[1][key]}' for key in test[1]])}
-        |   Actual : {', '.join([f'{key} : {res["value"][key]}' for key in res["value"]])}\n"""
+        | Expected : {', '.join([f'{hide(key,hidden_keyword)} : {hide(test[1][key],hidden_keyword)}' for key in test[1]])}
+        |   Actual : {', '.join([f'{hide(key,hidden_keyword)} : {hide(res["value"][key],hidden_keyword)}' for key in res["value"]])}\n"""
     printer(feedback)
 
 
