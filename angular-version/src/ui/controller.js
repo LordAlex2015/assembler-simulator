@@ -12,7 +12,8 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
     $scope.speeds = [{ speed: 1, desc: "1 HZ" },
     { speed: 4, desc: "4 HZ" },
     { speed: 8, desc: "8 HZ" },
-    { speed: 16, desc: "16 HZ" }];
+    { speed: 16, desc: "16 HZ" },
+    { speed: 1024, desc: "1024 HZ" }];
     $scope.speed = 4;
     $scope.outputStartIndex = 925;
     $scope.ramDisplayMode = "HEX";
@@ -113,6 +114,20 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         }, 1000 / $scope.speed);
     };
 
+    $scope.runQuickly = function() {
+        if (!$scope.checkPrgrmLoaded()) {
+            $scope.assemble();
+        }
+
+        $scope.isRunning = true;
+        runner = $timeout(function() {
+            if ($scope.executeStep() === true) {
+                $scope.runQuickly();
+            } else {
+                $scope.isRunning = false;
+            }
+        }, 1);
+    };
     $scope.stop = function() {
         $timeout.cancel(runner);
         $scope.isRunning = false;

@@ -22,6 +22,8 @@
                 <div class="btn-group">
                     <button type="button" class="btn btn-success navbar-btn" ng-click="run()" ng-hide="isRunning"><span
                             class="glyphicon glyphicon-play"></span> Run</button>
+                    <button type="button" class="btn btn-success navbar-btn" ng-click="runQuickly()" ng-hide="isRunning"><span
+                            class="glyphicon glyphicon-play"></span> Run Quickly</button>
                     <button type="button" class="btn btn-default navbar-btn" ng-click="stop()" ng-show="isRunning"><span
                             class="glyphicon glyphicon-stop"></span> Stop</button>
                     <button type="button" class="btn btn-default navbar-btn" ng-click="executeStep()"
@@ -160,6 +162,8 @@
                             </tbody>
                         </table>
 
+                        <span>Clock speed:</span>
+                        <select ng-model="speed" ng-options="item.speed as item.desc for item in speeds"></select>
                         <button type="button" class="btn btn-default navbar-btn"
                             ng-click="changeRamDisplayMode()">Change RAM display mode (HEX/ASCII)</button>
                         <p class="text-muted">RAM</p>
@@ -169,7 +173,8 @@
                                 <div ng-class="getMemoryInnerCellCss($index)" ng-switch="isInstruction($index)">
                                     <small ng-switch-default ng-show="ramDisplayMode === 'HEX'">{{ m | number:displayHex
                                         }}</small>
-                                    <small ng-switch-default ng-show="ramDisplayMode === 'ASCII'">{{ getChar(m) }}</small>
+                                    <small ng-switch-default ng-show="ramDisplayMode === 'ASCII'">{{ getChar(m)
+                                        }}</small>
                                     <a ng-switch-when="true" ng-click="jumpToLine($index)">
                                         <small ng-show="ramDisplayMode === 'HEX'">{{ m | number:displayHex }}</small>
                                         <small ng-show="ramDisplayMode === 'ASCII'">{{ getChar(m) }}</small>
@@ -179,9 +184,6 @@
                         </div>
                         <p style="margin-top:5px;">
                             <small>
-                                <span>Clock speed:</span>
-                                <select ng-model="speed"
-                                    ng-options="item.speed as item.desc for item in speeds"></select>
                                 <span style="margin-left:5px;">Instructions:</span>
                                 <a ng-click="displayInstr = true" ng-hide="displayInstr">Show</a>
                                 <a ng-click="displayInstr = false" ng-show="displayInstr">Hide</a>
