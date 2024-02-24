@@ -1529,10 +1529,10 @@ var app = angular.module('ASMSimulator', []);
     $scope.isRunning = false;
     $scope.displayHex = true;
     $scope.displayInstr = true;
-    $scope.displayA = false;
-    $scope.displayB = false;
-    $scope.displayC = false;
-    $scope.displayD = false;
+    $scope.displayA = true;
+    $scope.displayB = true;
+    $scope.displayC = true;
+    $scope.displayD = true;
     $scope.speeds = [{ speed: 1, desc: "1 HZ" },
     { speed: 4, desc: "4 HZ" },
     { speed: 8, desc: "8 HZ" },
