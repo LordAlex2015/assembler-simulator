@@ -109,7 +109,7 @@ def run_test(asm_file, test_file, hidden_keyword=HIDDEN_KEYWORD):
 
 def hide(elem, hidden_keyword=HIDDEN_KEYWORD):
     if type(elem) is str:
-        return elem.replace(hidden_keyword, "*")
+        return elem.replace(hidden_keyword, "")
     elif type(elem) is list:
         ret = []
         for e in elem:
