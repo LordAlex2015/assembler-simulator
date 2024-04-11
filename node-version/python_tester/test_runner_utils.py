@@ -131,8 +131,10 @@ def default_failure_feedback(test, res, printer, hidden_keyword=HIDDEN_KEYWORD):
     printer(feedback)
 
 
-def default_runtime_error_feedback(test, res, printer):
-    feedback = f"- your code produce a runtime_error : {res['value']}\n"
+def default_runtime_error_feedback(test, res, printer, hidden_keyword=HIDDEN_KEYWORD):
+    feedback = f"""- Your code produce a runtime : {res['value']}\n
+    with the following test : {', '.join([f'{hide(key,hidden_keyword)} : {hide(test[0][key],hidden_keyword)}' for key in test[0]])}\n
+    """
     printer(feedback)
 
 
