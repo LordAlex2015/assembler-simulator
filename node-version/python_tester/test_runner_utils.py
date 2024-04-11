@@ -154,7 +154,7 @@ def print_feedbacks(res, tests, feedbacks, printer, hidden_keyword=HIDDEN_KEYWOR
         elif res[i]["type"] == "assembly_error":
             feedbacks["assembly_error"](test_i, res_i, printer)
         elif res[i]["type"] == "runtime_error":
-            feedbacks["runtime_error"](test_i, res_i, printer)
+            feedbacks["runtime_error"](test_i, res_i, printer, hidden_keyword)
 
 
 def run_and_print_feedbacks(asm, tests, printer, feedbacks, hidden_keyword=HIDDEN_KEYWORD):
