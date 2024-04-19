@@ -163,6 +163,21 @@ def run_and_print_feedbacks(asm, tests, printer, feedbacks, hidden_keyword=HIDDE
     return res
 
 
+def run_and_print_feedbacks_generic_with_res(asm, tests, printer, hidden_keyword=HIDDEN_KEYWORD):
+
+    feedbacks = {"success": default_success_feedback,
+                 "failure": default_failure_feedback,
+                 "assembly_error": default_assembly_error_feedback,
+                 "runtime_error": default_runtime_error_feedback}
+    res = run_and_print_feedbacks(
+        asm, tests, printer, feedbacks, hidden_keyword=hidden_keyword)
+    grade = 0
+    for r in res:
+        if r["type"] == "success":
+            grade += 100/len(res)
+    return grade, res
+
+
 def run_and_print_feedbacks_generic(asm, tests, printer, hidden_keyword=HIDDEN_KEYWORD):
 
     feedbacks = {"success": default_success_feedback,
