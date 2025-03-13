@@ -47,6 +47,26 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
         '   POP C',
         '   RET',
     ].join('\n');
+
+    // This function synchronizes the scroll position between the textarea and the highlighted view.
+    $scope.syncScroll = function() {
+        var input = document.querySelector('.code-input');
+        var highlighted = document.querySelector('.highlighted-code');
+        if (input && highlighted) {
+            highlighted.scrollTop = input.scrollTop;
+            highlighted.scrollLeft = input.scrollLeft;
+            // Force a reflow:
+            void highlighted.offsetHeight;
+        }
+    };
+
+    // Watch for changes in the code and trigger syncScroll after the digest cycle.
+    $scope.$watch('code', function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            $scope.syncScroll();
+        }
+    });
+
     $scope.reset = function() {
         cpu.reset();
         memory.reset();
