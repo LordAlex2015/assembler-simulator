@@ -1571,6 +1571,25 @@ var app = angular.module('ASMSimulator', []);
         '   POP C',
         '   RET',
     ].join('\n');
+// This function synchronizes the scroll position between the textarea and the highlighted view.
+    $scope.syncScroll = function() {
+        var input = document.querySelector('.code-input');
+        var highlighted = document.querySelector('.highlighted-code');
+        if (input && highlighted) {
+            highlighted.scrollTop = input.scrollTop;
+            highlighted.scrollLeft = input.scrollLeft;
+            // Force a reflow:
+            void highlighted.offsetHeight;
+        }
+    };
+
+    // Watch for changes in the code and trigger syncScroll after the digest cycle.
+    $scope.$watch('code', function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            $scope.syncScroll();
+        }
+    });
+
     $scope.reset = function() {
         cpu.reset();
         memory.reset();
@@ -1838,6 +1857,170 @@ app.directive('selectLine', [function () {
                     e.preventDefault();
                     return false;
                 }
+            });
+        }
+    };
+}]);
+// Code editorr
+app.filter('syntaxHighlight', ['$log','$sce',function($log, $sce) {
+    return function(input) {
+        if (!input) return '';
+        // Escape HTML to avoid XSS and rendering issues.
+        var escaped = input.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        // Store comments and strings
+        var commentMatches = [];
+        var stringMatches = [];
+
+        // Extract and replace comments with placeholders
+        escaped = escaped.replace(/(;.*)$/gm, function(match) {
+            let id = 'COMMENT_' + commentMatches.length;
+            commentMatches.push({id: id, text: match});
+            return id;
+        });
+
+        // Extract and replace strings with placeholders
+        escaped = escaped.replace(/"([^"]*)"/g, function(match) {
+            let id = 'STRING_' + stringMatches.length;
+            stringMatches.push({id: id, text: match});
+            return id;
+        });
+
+        // Now highlight numbers in the clean code
+        escaped = escaped.replace(/\b\d+\b/g, '<span class="num">$&</span>');
+
+        // Highlight hexadecimal values
+        escaped = escaped.replace(/0x[0-9A-Fa-f]+/g, '<span class="hexa">$&</span>');
+
+        // Highlight addresses
+        escaped = escaped.replace(/\[([^\]]+)\]/g, '<span class="addr">[$1]</span>');
+
+        // Function keywords
+        escaped = escaped.replace(/(MOV|ADD|SUB|INC|DEC|CMP|JMP|JC|JNC|JZ|JNZ|JA|JNA|PUSH|POP|CALL|RET|MUL|DIV|AND|OR|XOR|NOT|SHL|SHR|HLT|DB)/g,
+            '<span class="function">$1</span>');
+
+        // Variables/labels
+        escaped = escaped.replace(/^\s*([A-Za-z_\.][A-Za-z0-9_\.]*)\s*:/gm,
+            '<span class="var">$1:</span>');
+
+        // Restore strings with highlighting
+        stringMatches.forEach(function(item) {
+            escaped = escaped.replace(item.id, '<span class="string">' + item.text + '</span>');
+        });
+
+        // Restore comments with highlighting
+        commentMatches.forEach(function(item) {
+            escaped = escaped.replace(item.id, '<span class="comment">' + item.text + '</span>');
+        });
+
+        return $sce.trustAsHtml(escaped);
+    };
+}]);
+
+;app.directive('scrollSync', ['$log', function($log) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            element.on('scroll mousemove mouseup', function() {
+                scope.$apply(function() {
+                    scope.$eval(attrs.scrollSync);
+                });
+            });
+        }
+    };
+}]);
+;app.directive('newLineSupport', ['$log', function ($log) {
+    return {
+        restrict: 'A',
+        require: 'ngModel', // Require the ngModel controller to update the model
+        link: function (scope, element, attrs, ngModelCtrl) {
+            element.bind("keydown", function (e) {
+                if (e.keyCode === 13) { // Enter key
+                    var val = element.val();
+                    var start = element[0].selectionStart;
+                    var end = element[0].selectionEnd;
+
+                    // Insert a newline character at the current caret position.
+                    var newVal = val.substring(0, start) + "\n" + val.substring(end);
+
+                    // Update the ngModel with the new value so that Angular's digest cycle reprocesses the change
+                    scope.$apply(function () {
+                        ngModelCtrl.$setViewValue(newVal);
+                        ngModelCtrl.$render();
+                    });
+
+                    // Place the caret after the newline.
+                    element[0].selectionStart = element[0].selectionEnd = start + 1;
+                    $log.log("new line added", newVal);
+
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
+    };
+}]);
+;app.directive('resizeSync', ['$window', function($window) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            // Get the highlighted code element
+            var highlightedEl = angular.element(document.querySelector('.highlighted-code'));
+            var editorContainer = angular.element(document.querySelector('.editor-container'));
+            var panelBody = editorContainer.parent();
+
+            // Create ResizeObserver to detect size changes
+            if ($window.ResizeObserver) {
+                var ro = new ResizeObserver(function(entries) {
+                    for (var entry of entries) {
+                        var newHeight = entry.target.offsetHeight;
+                        var newWidth = entry.target.offsetWidth;
+
+                        // Update the highlight div dimensions
+                        highlightedEl.css({
+                            width: newWidth + 'px',
+                            height: newHeight + 'px'
+                        });
+
+                        // Update the container dimensions
+                        editorContainer.css({
+                            width: newWidth + 'px',
+                            height: newHeight + 'px'
+                        });
+                    }
+                });
+
+                // Observe the textarea
+                ro.observe(element[0]);
+
+                // Clean up when scope is destroyed
+                scope.$on('$destroy', function() {
+                    ro.disconnect();
+                });
+            } else {
+                // Fallback for browsers without ResizeObserver
+                element.on('mouseup', function() {
+                    var newHeight = element[0].offsetHeight;
+                    var newWidth = element[0].offsetWidth;
+
+                    highlightedEl.css({
+                        width: newWidth + 'px',
+                        height: newHeight + 'px'
+                    });
+
+                    editorContainer.css({
+                        width: newWidth + 'px',
+                        height: newHeight + 'px'
+                    });
+                });
+            }
+
+            // Initial size sync
+            highlightedEl.css({
+                width: element[0].offsetWidth + 'px',
+                height: element[0].offsetHeight + 'px'
             });
         }
     };
